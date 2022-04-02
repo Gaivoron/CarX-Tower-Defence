@@ -1,13 +1,14 @@
-﻿using UnityEngine;
+﻿using TowerDefence.Monsters;
+using UnityEngine;
 
 namespace TowerDefence
 {
-	public sealed class CannonTower : ShootingTower
+	public sealed class CannonPlatform : WeaponPlatform
 	{
 		public GameObject m_projectilePrefab;
 		public Transform m_shootPoint;
 
-        protected override void Shoot(Monster target)
+        protected override void Shoot(IMonster target)
         {
 			Instantiate(m_projectilePrefab, m_shootPoint.position, m_shootPoint.rotation);
 		}

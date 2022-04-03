@@ -4831,7 +4831,7 @@ GameObject:
   - component: {fileID: 11496340}
   - component: {fileID: 2335220436495461726}
   m_Layer: 0
-  m_Name: GuidedProjectile
+  m_Name: MagicMissile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

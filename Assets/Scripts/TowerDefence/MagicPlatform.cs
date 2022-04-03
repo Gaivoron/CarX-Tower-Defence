@@ -7,16 +7,20 @@ namespace TowerDefence
     public sealed class MagicPlatform : WeaponPlatform
 	{
 		[SerializeField]
-		private GameObject m_projectilePrefab;
+		private GuidedProjectile m_projectilePrefab;
+
+		[SerializeField]
+		private Transform m_spawnPoint;
 
         protected override void Shoot(IMonster target)
         {
 			if (m_projectilePrefab == null)
+			{
 				return;
+			}
 
-			var projectile = Instantiate(m_projectilePrefab, transform.position + Vector3.up * 1.5f, Quaternion.identity);
-			var projectileBeh = projectile.GetComponent<GuidedProjectile>();
-			projectileBeh.Target = target;
+			var projectile = Instantiate(m_projectilePrefab, m_spawnPoint.position, Quaternion.identity);
+			projectile.SetTarget(target);
 		}
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace TowerDefence.Monsters
 {
@@ -20,12 +21,20 @@ namespace TowerDefence.Monsters
         private void OnMonsterSpawned(IMonster monster)
         {
 			m_monstersList.Add(monster);
+			monster.Mover.FinishReached += OnFinishReached;
 			monster.Released += OnReleased;
 
 			void OnReleased()
 			{
+				monster.Mover.FinishReached -= OnFinishReached;
 				monster.Released -= OnReleased;
 				m_monstersList.Remove(monster);
+			}
+
+			void OnFinishReached()
+			{
+				//TODO - should actually relate this message to some other class.
+				monster.Release();
 			}
 		}
     }

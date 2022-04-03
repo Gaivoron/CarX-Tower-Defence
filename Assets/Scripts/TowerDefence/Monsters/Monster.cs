@@ -9,10 +9,10 @@ namespace TowerDefence.Monsters
 		public event Action Died;
 		public event Action Released;
 
-		const float m_reachDistance = 0.3f;
-
-		public float m_speed = 0.1f;
 		public int m_maxHP = 30;
+
+		[SerializeField]
+		private PathAgent _navigation;
 
 		private int m_HP;
 
@@ -24,45 +24,28 @@ namespace TowerDefence.Monsters
 				m_HP = value;
 				if (m_HP <= 0)
 				{
-					Destroy(gameObject);
 					Died?.Invoke();
 					//TODO - play death animation?
-					Released?.Invoke();
+					Release();
 				}
 			}
 		}
 
-		public GameObject MoveTarget
+		public PathAgent Navigation => _navigation;
+
+		IMover IMonster.Mover => _navigation;
+
+		public void Release()
 		{
-			get;
-			set;
+			Released?.Invoke();
+			//TODO - do not destroy. Return to object pool instead.
+			Destroy(gameObject);
 		}
 
-        public Vector3 Position => transform.position;
-
-        private void Start()
+		private void Start()
 		{
 			HP = m_maxHP;
+			_navigation.SetProgress(0);
 		}
-
-		private void Update()
-		{
-			if (MoveTarget == null)
-				return;
-
-			if (Vector3.Distance(transform.position, MoveTarget.transform.position) <= m_reachDistance)
-			{
-				Released?.Invoke();
-				Destroy(gameObject);
-				return;
-			}
-
-			var translation = MoveTarget.transform.position - transform.position;
-			if (translation.magnitude > m_speed)
-			{
-				translation = translation.normalized * m_speed;
-			}
-			transform.Translate(translation);
-		}
-	}
+    }
 }

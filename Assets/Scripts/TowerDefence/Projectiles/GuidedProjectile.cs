@@ -3,30 +3,44 @@ using UnityEngine;
 
 namespace TowerDefence.Projectiles
 {
-	public sealed class GuidedProjectile : MonoBehaviour
+    public sealed class GuidedProjectile : MonoBehaviour
 	{
 		[SerializeField]
 		private float m_speed = 0.2f;
 
-		public IMonster Target
+		private IMonster m_target;
+
+		public void SetTarget(IMonster value)
 		{
-			private get;
-			set;
+			if (m_target != null)
+			{
+				m_target.Released -= OnTargetReleased;
+			}
+
+			m_target = value;
+			if (m_target != null)
+			{
+				m_target.Released += OnTargetReleased;
+			}
 		}
 
-		private void Update()
+        private void OnTargetReleased()
+        {
+			m_target.Released -= OnTargetReleased;
+			m_target = null;
+		}
+
+        private void Update()
 		{
-			if (Target == null)
+			if (m_target == null)
 			{
 				Destroy(gameObject);
 				return;
 			}
 
-			var translation = Target.Position - transform.position;
-			if (translation.magnitude > m_speed)
-			{
-				translation = translation.normalized * m_speed;
-			}
+			var translation = m_target.Mover.Position - transform.position;
+			translation = translation.normalized * m_speed * Time.deltaTime;
+
 			transform.Translate(translation);
 		}
 	}

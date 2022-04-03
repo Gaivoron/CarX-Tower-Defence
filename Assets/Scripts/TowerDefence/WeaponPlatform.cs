@@ -47,7 +47,7 @@ namespace TowerDefence
 
         private bool IsValidTarget(IMonster target)
         {
-			var distance = transform.position - target.Position;
+			var distance = transform.position - target.Mover.Position;
 			return distance.sqrMagnitude <= m_range * m_range;
 		}
     }

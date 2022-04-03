@@ -9,8 +9,8 @@ namespace TowerDefence.Monsters
 		event Action Released;
 
 		int HP { get; set; }
+		IMover Mover { get; }
 
-		//TODO - move into a seperate interface that will be responsible for movement exclusively?
-		Vector3 Position { get; }
+        void Release();
     }
 }

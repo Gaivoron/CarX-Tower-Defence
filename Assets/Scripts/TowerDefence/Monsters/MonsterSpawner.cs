@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace TowerDefence.Monsters
 {
-
     public sealed class MonsterSpawner : MonoBehaviour
 	{
 		public event Action<IMonster> Spawned;
@@ -13,7 +12,7 @@ namespace TowerDefence.Monsters
 		[SerializeField]
 		private float m_interval = 3;
 		[SerializeField]
-		private GameObject m_moveTarget;
+		private LinearPath m_path;
 
 		private float m_lastSpawn = -1;
 
@@ -29,7 +28,7 @@ namespace TowerDefence.Monsters
 		private void SpawnMonster()
 		{
 			var monster = Instantiate(m_monsterPrefab, transform.position, Quaternion.identity);
-			monster.MoveTarget = m_moveTarget;
+			monster.Navigation.SetPath(m_path);
 			Spawned?.Invoke(monster);
 		}
 	}

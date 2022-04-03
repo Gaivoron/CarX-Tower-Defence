@@ -462,6 +462,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 113750, guid: 7ac56bab20be57a49b715c98471c1346, type: 3}
+      propertyPath: m_Name
+      value: MagicTower
+      objectReference: {fileID: 0}
     - target: {fileID: 401874, guid: 7ac56bab20be57a49b715c98471c1346, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -861,6 +865,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 126824, guid: adff1ae3360dcb14fb5fbd7774d0ce0d, type: 3}
+      propertyPath: m_Name
+      value: CannonTower
+      objectReference: {fileID: 0}
     - target: {fileID: 494260, guid: adff1ae3360dcb14fb5fbd7774d0ce0d, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -964,7 +972,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebddef33c1146ee4dbee2a0f72098ff1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_shootInterval: 1
+  m_shootInterval: 2
   m_range: 10
   m_projectilePrefab: {fileID: 11496340, guid: 83b1bef18dd7ed947ae8f4d857327102, type: 3}
   m_spawnPoint: {fileID: 57463176}

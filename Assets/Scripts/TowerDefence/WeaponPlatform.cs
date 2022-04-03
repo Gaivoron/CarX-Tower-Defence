@@ -39,7 +39,15 @@ namespace TowerDefence
 			}
 		}
 
-		private IMonster FindTarget()
+        private void OnDrawGizmosSelected()
+        {
+			var originalColor = Gizmos.color;
+			Gizmos.color = Color.yellow;
+			Gizmos.DrawWireSphere(transform.position, m_range);
+			Gizmos.color = originalColor;
+        }
+
+        private IMonster FindTarget()
 		{
 			//TODO - get list of all active monsters.
 			return Monsters.FirstOrDefault(IsValidTarget);

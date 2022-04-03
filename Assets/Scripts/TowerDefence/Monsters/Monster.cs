@@ -1,10 +1,10 @@
 ﻿using System;
 using UnityEngine;
+using Shared.ObjectPool;
 
 namespace TowerDefence.Monsters
 {
-    //TODO - turn into an Object for ObjectPool.
-    public sealed class Monster : MonoBehaviour, IMonster
+    public sealed class Monster : MonoBehaviour, IMonster, IObject
 	{
 		public event Action Died;
 		public event Action Released;
@@ -38,14 +38,14 @@ namespace TowerDefence.Monsters
 		public void Release()
 		{
 			Released?.Invoke();
-			//TODO - do not destroy. Return to object pool instead.
-			Destroy(gameObject);
+			Navigation.SetPath(null);
+			gameObject.SetActive(false);
 		}
 
-		private void Start()
-		{
+        void IObject.Init()
+        {
+			gameObject.SetActive(true);
 			HP = m_maxHP;
-			_navigation.SetProgress(0);
 		}
     }
 }

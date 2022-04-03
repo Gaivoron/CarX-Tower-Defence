@@ -8,13 +8,11 @@ namespace TowerDefence.Monsters
 		public event Action<IMonster> Spawned;
 
 		[SerializeField]
-		private Monster m_monsterPrefab;
-		[SerializeField]
 		private float m_interval = 3;
 		[SerializeField]
 		private LinearPath m_path;
 
-		private float m_lastSpawn = -1;
+		private float m_lastSpawn = 0;
 
 		private void Update()
 		{
@@ -25,10 +23,12 @@ namespace TowerDefence.Monsters
 			}
 		}
 
+		//TODO - spawn all kinds of monster-variations.
 		private void SpawnMonster()
 		{
-			var monster = Instantiate(m_monsterPrefab, transform.position, Quaternion.identity);
+			var monster = MonsterPool.Instance.Get();
 			monster.Navigation.SetPath(m_path);
+			monster.Navigation.SetProgress(0);
 			Spawned?.Invoke(monster);
 		}
 	}

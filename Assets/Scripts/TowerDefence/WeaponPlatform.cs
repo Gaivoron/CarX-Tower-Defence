@@ -23,10 +23,11 @@ namespace TowerDefence
 			UpdateCycleAsync().Forget();
 		}
 
-        protected abstract void Shoot(IMonster target);
+        protected abstract bool Shoot(IMonster target);
 
 		private async UniTask RechargeAsync()
 		{
+			Debug.Log($"{name}.{GetType().Name}.{nameof(RechargeAsync)}");
 			while (m_rechargeProgress < m_rechargeDuration)
 			{
 				await UniTask.Yield();
@@ -44,14 +45,19 @@ namespace TowerDefence
 
 		private async UniTask UpdateAsync()
 		{
+			Debug.Log($"{name}.{GetType().Name}.{nameof(UpdateAsync)}");
 			//recharging shot
 			await RechargeAsync();
 
 			//finding target
 			var target = await AcquireTargetAsync();
+			//await UniTask.SwitchToMainThread();
 
-			Shoot(target);
-			OnShot();
+			Debug.Log(nameof(Shoot));
+			if (Shoot(target))
+			{
+				OnShot();
+			}
 		}
 
 		//TODO - make protected?
@@ -62,6 +68,7 @@ namespace TowerDefence
 
 		private async UniTask<IMonster> AcquireTargetAsync()
 		{
+			Debug.Log($"{name}.{GetType().Name}.{nameof(AcquireTargetAsync)}");
 			IMonster target;
 
             while (true)
@@ -83,9 +90,11 @@ namespace TowerDefence
 			return Monsters.FirstOrDefault(IsValidTarget);
 		}
 
-		private bool IsValidTarget(IMonster target)
+		private bool IsValidTarget(IMonster target) => IsWithinReach(target.Mover.Position);
+
+		protected bool IsWithinReach(Vector3 position)
 		{
-			var distance = transform.position - target.Mover.Position;
+			var distance = transform.position - position;
 			return distance.sqrMagnitude <= m_range * m_range;
 		}
 

@@ -200,6 +200,11 @@ PrefabInstance:
       propertyPath: m_shootPoint
       value: 
       objectReference: {fileID: 1262217986}
+    - target: {fileID: 11480962, guid: 59e6d8e8602973b448a2f2eddd7afee0, type: 3}
+      propertyPath: m_projectilePrefab
+      value: 
+      objectReference: {fileID: 11464742, guid: 4124357cfe121804f9eea0a690ce3b52,
+        type: 3}
     - target: {fileID: 19867354, guid: 59e6d8e8602973b448a2f2eddd7afee0, type: 3}
       propertyPath: InitialModule.startSizeY.minMaxState
       value: 3
@@ -536,8 +541,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbdcd4a28493d6543aa0ab3dec6c1d8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_monsterPrefab: {fileID: 2821562197238542514, guid: 194fdeb00a7b89543a61c3264c46bd59,
-    type: 3}
   m_interval: 3
   m_path: {fileID: 780892722}
 --- !u!4 &780892721
@@ -619,7 +622,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 402910d26c91bc64bbe14bd1fc189497, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -972,7 +975,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebddef33c1146ee4dbee2a0f72098ff1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_shootInterval: 2
+  m_rechargeDuration: 2
   m_range: 10
   m_projectilePrefab: {fileID: 11496340, guid: 83b1bef18dd7ed947ae8f4d857327102, type: 3}
   m_spawnPoint: {fileID: 57463176}

@@ -8,7 +8,14 @@ namespace TowerDefence
 		public GameObject m_projectilePrefab;
 		public Transform m_shootPoint;
 
-        protected override void Shoot(IMonster target)
+		[Space]
+		[Header("Rotation")]
+		[SerializeField]
+		private Transform m_yRotor;
+		[SerializeField]
+		private Transform m_xRotor;
+
+		protected override void Shoot(IMonster target)
         {
 			Instantiate(m_projectilePrefab, m_shootPoint.position, m_shootPoint.rotation);
 		}

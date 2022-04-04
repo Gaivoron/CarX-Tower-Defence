@@ -2,15 +2,17 @@
 using System.Linq;
 using TowerDefence.Monsters;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 
 namespace TowerDefence
 {
     public abstract class WeaponPlatform : MonoBehaviour, IPlatform
 	{
-		public float m_shootInterval = 0.5f;
+		[UnityEngine.Serialization.FormerlySerializedAs("m_shootInterval")]
+		public float m_rechargeDuration = 0.5f;
 		public float m_range = 4f;
 
-		private float m_lastShotTime = -0.5f;
+		private float m_rechargeProgress = 0f;
         private IGameplayData m_data;
 
 		private IEnumerable<IMonster> Monsters => m_data.MonsterRoster.Monsters;
@@ -18,45 +20,81 @@ namespace TowerDefence
         public void Initialize(IGameplayData data)
         {
 			m_data = data;
-        }
+			UpdateCycleAsync().Forget();
+		}
 
         protected abstract void Shoot(IMonster target);
 
-        private void Update()
-        {
-			//recharging shot
-			if (m_lastShotTime + m_shootInterval > Time.time)
+		private async UniTask RechargeAsync()
+		{
+			while (m_rechargeProgress < m_rechargeDuration)
 			{
-				return;
-			}
-
-			//finding target
-			var target = FindTarget();
-			if (target != null)
-			{
-				Shoot(target);
-				m_lastShotTime = Time.time;
+				await UniTask.Yield();
+				m_rechargeProgress += Time.deltaTime;
 			}
 		}
 
-        private void OnDrawGizmosSelected()
+        private async UniTask UpdateCycleAsync()
+        {
+			while (true)
+			{
+				await UpdateAsync();
+			}
+		}
+
+		private async UniTask UpdateAsync()
+		{
+			//recharging shot
+			await RechargeAsync();
+
+			//finding target
+			var target = await AcquireTargetAsync();
+
+			Shoot(target);
+			OnShot();
+		}
+
+		//TODO - make protected?
+		private void OnShot()
+		{
+			m_rechargeProgress = 0f;
+		}
+
+		private async UniTask<IMonster> AcquireTargetAsync()
+		{
+			IMonster target;
+
+            while (true)
+			{
+				target = AcquireTarget();
+				if (target != null)
+				{
+					break;
+				}
+
+				await UniTask.Yield();
+			}
+
+			return target;
+		}
+
+		private IMonster AcquireTarget()
+		{
+			return Monsters.FirstOrDefault(IsValidTarget);
+		}
+
+		private bool IsValidTarget(IMonster target)
+		{
+			var distance = transform.position - target.Mover.Position;
+			return distance.sqrMagnitude <= m_range * m_range;
+		}
+
+		private void OnDrawGizmosSelected()
         {
 			var originalColor = Gizmos.color;
 			Gizmos.color = Color.yellow;
 			Gizmos.DrawWireSphere(transform.position, m_range);
 			Gizmos.color = originalColor;
         }
-
-        private IMonster FindTarget()
-		{
-			//TODO - get list of all active monsters.
-			return Monsters.FirstOrDefault(IsValidTarget);
-		}
-
-        private bool IsValidTarget(IMonster target)
-        {
-			var distance = transform.position - target.Mover.Position;
-			return distance.sqrMagnitude <= m_range * m_range;
-		}
     }
 }

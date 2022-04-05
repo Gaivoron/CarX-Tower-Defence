@@ -1,4 +1,5 @@
-﻿using TowerDefence.Monsters;
+﻿using Cysharp.Threading.Tasks;
+using TowerDefence.Monsters;
 using TowerDefence.Projectiles;
 using UnityEngine;
 
@@ -12,16 +13,33 @@ namespace TowerDefence
 		[SerializeField]
 		private Transform m_spawnPoint;
 
-        protected override bool Shoot(IMonster target)
+        protected override ISolution AcquireSolution(IMonster target)
         {
 			if (m_projectilePrefab == null)
 			{
-				return false;
+				return null;
 			}
 
-			var projectile = Instantiate(m_projectilePrefab, m_spawnPoint.position, Quaternion.identity);
-			projectile.SetTarget(target);
-			return true;
+			return new Solution(this, target);
 		}
+
+		private sealed class Solution : ISolution
+		{
+            private readonly MagicPlatform m_platform;
+            private readonly IMonster m_target;
+
+            public Solution(MagicPlatform platform, IMonster target)
+			{
+				m_platform = platform;
+				m_target = target;
+			}
+
+            UniTask<bool> ISolution.ExecuteAsync()
+            {
+				var projectile = Instantiate(m_platform.m_projectilePrefab, m_platform.m_spawnPoint.position, Quaternion.identity);
+				projectile.SetTarget(m_target);
+				return new UniTask<bool>(true);
+            }
+        }
     }
 }

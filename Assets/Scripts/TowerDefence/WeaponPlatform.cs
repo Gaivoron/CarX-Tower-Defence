@@ -23,7 +23,13 @@ namespace TowerDefence
 			UpdateCycleAsync().Forget();
 		}
 
-        protected abstract bool Shoot(IMonster target);
+		protected abstract ISolution AcquireSolution(IMonster target);
+
+		protected bool IsWithinReach(Vector3 position)
+		{
+			var distance = transform.position - position;
+			return distance.sqrMagnitude <= m_range * m_range;
+		}
 
 		private async UniTask RechargeAsync()
 		{
@@ -45,16 +51,17 @@ namespace TowerDefence
 
 		private async UniTask UpdateAsync()
 		{
-			Debug.Log($"{name}.{GetType().Name}.{nameof(UpdateAsync)}");
+			//Debug.Log($"{name}.{GetType().Name}.{nameof(UpdateAsync)}");
 			//recharging shot
 			await RechargeAsync();
 
 			//finding target
-			var target = await AcquireTargetAsync();
+			var solution = await AcquireSolutionAsync();
 			//await UniTask.SwitchToMainThread();
 
-			Debug.Log(nameof(Shoot));
-			if (Shoot(target))
+			var hasFired = await solution.ExecuteAsync();
+
+			if (hasFired)
 			{
 				OnShot();
 			}
@@ -66,37 +73,40 @@ namespace TowerDefence
 			m_rechargeProgress = 0f;
 		}
 
-		private async UniTask<IMonster> AcquireTargetAsync()
+		private async UniTask<ISolution> AcquireSolutionAsync()
 		{
-			Debug.Log($"{name}.{GetType().Name}.{nameof(AcquireTargetAsync)}");
-			IMonster target;
+			//Debug.Log($"{name}.{GetType().Name}.{nameof(AcquireSolutionAsync)}");
+			ISolution solution;
 
             while (true)
 			{
-				target = AcquireTarget();
-				if (target != null)
+				solution = AcquireSolution();
+				if (solution != null)
 				{
 					break;
 				}
 
-				await UniTask.Yield();
+				await UniTask.Delay(10);
 			}
 
-			return target;
+			return solution;
 		}
 
-		private IMonster AcquireTarget()
+		private ISolution AcquireSolution()
 		{
-			return Monsters.FirstOrDefault(IsValidTarget);
+			foreach (var target in Monsters.Where(IsValidTarget))
+			{
+				var solution = AcquireSolution(target);
+				if (solution != null)
+				{
+					return solution;
+				}
+			}
+
+			return null;
 		}
 
 		private bool IsValidTarget(IMonster target) => IsWithinReach(target.Mover.Position);
-
-		protected bool IsWithinReach(Vector3 position)
-		{
-			var distance = transform.position - position;
-			return distance.sqrMagnitude <= m_range * m_range;
-		}
 
 		private void OnDrawGizmosSelected()
         {

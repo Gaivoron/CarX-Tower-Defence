@@ -44,7 +44,6 @@ namespace TowerDefence
 				return middlePoint;
 			}
 
-			Debug.Log($"{Mathf.Sign(y1) * Mathf.Sign(middleY)} vs {Mathf.Sign(middleY) * Mathf.Sign(y2)}");
 
 			var iteration = Mathf.Sign(y1) * Mathf.Sign(middleY) <= 0 ? new Dichotomy(m_func, m_point1, middlePoint) : new Dichotomy(m_func, middlePoint, m_point2);
 			return iteration.GetSolution(distanceTolerance);

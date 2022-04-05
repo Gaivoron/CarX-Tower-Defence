@@ -112,8 +112,13 @@ namespace TowerDefence
         {
 			var originalColor = Gizmos.color;
 			Gizmos.color = Color.yellow;
-			Gizmos.DrawWireSphere(transform.position, m_range);
+			DrawGizmos();
 			Gizmos.color = originalColor;
         }
+
+		protected virtual void DrawGizmos()
+		{
+			Gizmos.DrawWireSphere(transform.position, m_range);
+		}
     }
 }

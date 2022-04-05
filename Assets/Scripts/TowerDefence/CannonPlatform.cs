@@ -40,7 +40,7 @@ namespace TowerDefence
 				return null;
 			}
 
-			return new Solution(this, forecastedPosition, timing.Value.Item2);
+			return new Solution(this, forecastedPosition);
 
 			float GetShootingTiming(float hitTime)
 			{
@@ -53,7 +53,13 @@ namespace TowerDefence
 			}
 		}
 
-		private sealed class Solution : ISolution
+        protected override void DrawGizmos()
+        {
+            base.DrawGizmos();
+			Gizmos.DrawRay(m_shootPoint.position, m_shootPoint.forward * 100);
+        }
+
+        private sealed class Solution : ISolution
 		{
 			private readonly CannonPlatform m_canon;
 
@@ -61,15 +67,21 @@ namespace TowerDefence
 			private readonly float m_rotationX;
 
 			//TODO - turn predictedPosition into rotation deltas.
-			public Solution(CannonPlatform canon, Vector3 predictedPosition, float rotationDuration)
+			//TODO - pass float rotationDuration?
+			public Solution(CannonPlatform canon, Vector3 predictedPosition)
 			{
 				m_canon = canon;
+				var direction = predictedPosition - m_canon.transform.position;
+				m_rotationY = Vector3.SignedAngle(m_canon.m_yRotor.forward, direction, Vector3.up);
+				//m_rotationX = Vector3.SignedAngle(m_canon.m_xRotor.forward, direction, Vector3.forward);
 			}
 
             async UniTask<bool> ISolution.ExecuteAsync()
             {
 				//TODO - implement rotation here.
-				await UniTask.WaitUntil(() => false);
+				//var rotationY = m_canon.m_yRotor.localRotation.eulerAngles;
+				//m_canon.m_xRotor.RotateAround(m_canon.m_xRotor.position, Vector3.forward, m_rotationX);
+				m_canon.m_yRotor.RotateAround(m_canon.m_yRotor.position, Vector3.up, m_rotationY);
 				Instantiate(m_canon.m_projectilePrefab, m_canon.m_shootPoint.position, m_canon.m_shootPoint.rotation);
 				return true;
 			}

@@ -12,7 +12,15 @@ namespace TowerDefence.Projectiles
 		private void Update()
 		{
 			var translation = transform.forward * m_speed * Time.deltaTime;
-			transform.Translate(translation);
+			transform.position += translation;
 		}
-	}
+
+        private void OnDrawGizmos()
+        {
+			var color = Gizmos.color;
+			Gizmos.color = Color.red;
+			Gizmos.DrawRay(transform.position, transform.forward * 100);
+			Gizmos.color = color;
+		}
+    }
 }

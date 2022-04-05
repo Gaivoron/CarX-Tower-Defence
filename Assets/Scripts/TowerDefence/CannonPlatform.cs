@@ -64,7 +64,9 @@ namespace TowerDefence
 			private readonly CannonPlatform m_canon;
 
 			private readonly float m_rotationY;
-			private readonly float m_rotationX;
+			//private readonly float m_rotationX;
+
+			private readonly Vector3 m_predictedPosition;
 
 			//TODO - turn predictedPosition into rotation deltas.
 			//TODO - pass float rotationDuration?
@@ -73,15 +75,18 @@ namespace TowerDefence
 				m_canon = canon;
 				var direction = predictedPosition - m_canon.transform.position;
 				m_rotationY = Vector3.SignedAngle(m_canon.m_yRotor.forward, direction, Vector3.up);
-				//m_rotationX = Vector3.SignedAngle(m_canon.m_xRotor.forward, direction, Vector3.forward);
+				//m_rotationX = -Vector3.SignedAngle(m_canon.m_xRotor.forward, direction, m_canon.m_xRotor.right);
+				//Debug.Log(m_rotationX);
+				m_predictedPosition = predictedPosition;
 			}
 
             async UniTask<bool> ISolution.ExecuteAsync()
             {
 				//TODO - implement rotation here.
 				//var rotationY = m_canon.m_yRotor.localRotation.eulerAngles;
-				//m_canon.m_xRotor.RotateAround(m_canon.m_xRotor.position, Vector3.forward, m_rotationX);
+				//m_canon.m_xRotor.RotateAround(m_canon.m_xRotor.position, m_canon.m_xRotor.right, m_rotationX);
 				m_canon.m_yRotor.RotateAround(m_canon.m_yRotor.position, Vector3.up, m_rotationY);
+				m_canon.m_xRotor.LookAt(m_predictedPosition);
 				Instantiate(m_canon.m_projectilePrefab, m_canon.m_shootPoint.position, m_canon.m_shootPoint.rotation);
 				return true;
 			}

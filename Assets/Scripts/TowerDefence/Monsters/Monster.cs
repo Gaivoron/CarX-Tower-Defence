@@ -21,7 +21,6 @@ namespace TowerDefence.Monsters
 			get => m_HP;
 			set
 			{
-				Debug.Log($"{name}.{GetType().Name}.{nameof(HP)} = {value}");
 				m_HP = value;
 				if (m_HP <= 0)
 				{

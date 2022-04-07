@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using Shared.Mathematics;
+using System.Threading;
 using TowerDefence.Monsters;
 using TowerDefence.Projectiles;
 using UnityEngine;
@@ -93,7 +94,7 @@ namespace TowerDefence.Towers
 				//Debug.Log(m_rotationX);
 			}
 
-			async UniTask<bool> ISolution.ExecuteAsync()
+			async UniTask<bool> ISolution.ExecuteAsync(CancellationToken cancellation)
 			{
 				//TODO - implement rotation here.
 				//var rotationY = m_canon.m_yRotor.localRotation.eulerAngles;

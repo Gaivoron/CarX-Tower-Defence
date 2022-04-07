@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using System.Threading;
 using TowerDefence.Monsters;
 using TowerDefence.Projectiles;
 using UnityEngine;
@@ -34,7 +35,7 @@ namespace TowerDefence.Towers
 				m_target = target;
 			}
 
-            UniTask<bool> ISolution.ExecuteAsync()
+            UniTask<bool> ISolution.ExecuteAsync(CancellationToken cancellation)
             {
 				var projectile = Instantiate(m_platform.m_projectilePrefab, m_platform.m_spawnPoint.position, Quaternion.identity);
 				projectile.SetTarget(m_target);

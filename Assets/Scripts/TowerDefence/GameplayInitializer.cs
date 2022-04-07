@@ -1,4 +1,5 @@
-﻿using TowerDefence.Monsters;
+﻿using System;
+using TowerDefence.Monsters;
 using TowerDefence.Towers;
 using UnityEngine;
 
@@ -6,6 +7,9 @@ namespace TowerDefence
 {
     public sealed class GameplayInitializer : MonoBehaviour, IGameplayData
     {
+        public event Action Defeated;
+        public event Action<int> LiveForceChanged;
+
         [SerializeField]
         private GameplayConfig m_config;
 
@@ -18,10 +22,25 @@ namespace TowerDefence
         [UnityEngine.Serialization.FormerlySerializedAs("_spawners")]
         private MonsterSpawner[] m_spawners;
 
+        private int m_liveForce;
+
         public int LiveForce
         {
-            get;
-            set;
+            get => m_liveForce;
+            set
+            {
+                if (m_liveForce == value)
+                {
+                    return;
+                }
+
+                m_liveForce = value;
+                LiveForceChanged?.Invoke(m_liveForce);
+                if (m_liveForce <= 0)
+                {
+                    Defeated?.Invoke();
+                }
+            }
         }
 
         public IMonsterRoster MonsterRoster
@@ -38,7 +57,7 @@ namespace TowerDefence
         //TODO - should be public.
         private void Initialize(GameplayConfig config)
         {
-            LiveForce = config.LiveForce;
+            m_liveForce = config.LiveForce;
 
             MonsterRoster = new MonsterRoster(m_spawners);
             foreach (var tower in m_towers)

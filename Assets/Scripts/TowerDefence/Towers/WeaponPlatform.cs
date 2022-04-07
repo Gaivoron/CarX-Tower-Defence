@@ -3,11 +3,15 @@ using System.Linq;
 using TowerDefence.Monsters;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using System.Threading;
+using System;
 
 namespace TowerDefence.Towers
 {
-	public abstract class WeaponPlatform : MonoBehaviour, IPlatform
+    public abstract class WeaponPlatform : MonoBehaviour, IPlatform, IRechargeable
 	{
+		public event Action<float, float> Recharged;
+
 		[UnityEngine.Serialization.FormerlySerializedAs("m_shootInterval")]
 		public float m_rechargeDuration = 0.5f;
 		public float m_range = 4f;
@@ -15,15 +19,20 @@ namespace TowerDefence.Towers
 		private float m_rechargeProgress = 0f;
 		private IGameplayData m_data;
 
-		private IEnumerable<IMonster> Monsters => m_data.MonsterRoster.Monsters;
+        private CancellationTokenSource m_cancellationTokenSource;
+
+        private IEnumerable<IMonster> Monsters => m_data.MonsterRoster.Monsters;
 
 		public void Initialize(IGameplayData data)
 		{
 			m_data = data;
-			UpdateCycleAsync().Forget();
+			m_data.Defeated += OnGameOver;
+
+			m_cancellationTokenSource = new CancellationTokenSource();
+			UpdateCycleAsync(m_cancellationTokenSource.Token).Forget();
 		}
 
-		protected abstract ISolution AcquireSolution(IMonster target);
+        protected abstract ISolution AcquireSolution(IMonster target);
 
 		protected bool IsWithinReach(Vector3 position)
 		{
@@ -31,35 +40,33 @@ namespace TowerDefence.Towers
 			return distance.sqrMagnitude <= m_range * m_range;
 		}
 
-		private async UniTask RechargeAsync()
+		private async UniTask RechargeAsync(CancellationToken cancellation)
 		{
-			Debug.Log($"{name}.{GetType().Name}.{nameof(RechargeAsync)}");
 			while (m_rechargeProgress < m_rechargeDuration)
 			{
-				await UniTask.Yield();
+				await UniTask.Yield(cancellation);
 				m_rechargeProgress += Time.deltaTime;
+				Recharged?.Invoke(m_rechargeProgress, m_rechargeDuration);
 			}
 		}
 
-		private async UniTask UpdateCycleAsync()
+		private async UniTask UpdateCycleAsync(CancellationToken cancellation)
 		{
 			while (true)
 			{
-				await UpdateAsync();
+				await UpdateAsync(cancellation);
 			}
 		}
 
-		private async UniTask UpdateAsync()
+		private async UniTask UpdateAsync(CancellationToken cancellation)
 		{
-			//Debug.Log($"{name}.{GetType().Name}.{nameof(UpdateAsync)}");
 			//recharging shot
-			await RechargeAsync();
+			await RechargeAsync(cancellation);
 
 			//finding target
-			var solution = await AcquireSolutionAsync();
-			//await UniTask.SwitchToMainThread();
+			var solution = await AcquireSolutionAsync(cancellation);
 
-			var hasFired = await solution.ExecuteAsync();
+			var hasFired = await solution.ExecuteAsync(cancellation);
 
 			if (hasFired)
 			{
@@ -70,12 +77,13 @@ namespace TowerDefence.Towers
 		//TODO - make protected?
 		private void OnShot()
 		{
+			//TODO - turn into a property?
 			m_rechargeProgress = 0f;
+			Recharged?.Invoke(m_rechargeProgress, m_rechargeDuration);
 		}
 
-		private async UniTask<ISolution> AcquireSolutionAsync()
+		private async UniTask<ISolution> AcquireSolutionAsync(CancellationToken cancellation)
 		{
-			//Debug.Log($"{name}.{GetType().Name}.{nameof(AcquireSolutionAsync)}");
 			ISolution solution;
 
 			while (true)
@@ -114,6 +122,17 @@ namespace TowerDefence.Towers
 			Gizmos.color = Color.yellow;
 			DrawGizmos();
 			Gizmos.color = originalColor;
+		}
+
+		private void OnGameOver()
+		{
+			m_data.Defeated -= OnGameOver;
+
+			if (m_cancellationTokenSource != null)
+			{
+				m_cancellationTokenSource.Cancel();
+				m_cancellationTokenSource = null;
+			}
 		}
 
 		protected virtual void DrawGizmos()

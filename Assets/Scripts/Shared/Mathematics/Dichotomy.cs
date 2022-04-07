@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace TowerDefence
+namespace Shared.Mathematics
 {
     public sealed class Dichotomy<T>
 	{

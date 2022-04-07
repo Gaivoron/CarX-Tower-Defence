@@ -5,6 +5,8 @@ namespace TowerDefence.Monsters
 {
     public sealed class MonsterRoster : IMonsterRoster
 	{
+		public event Action<IMonster> MonsterReachedFinalDestination;
+
 		private readonly IList<IMonster> m_monstersList = new List<IMonster>();
 
 		IEnumerable<IMonster> IMonsterRoster.Monsters => m_monstersList;
@@ -33,8 +35,7 @@ namespace TowerDefence.Monsters
 
 			void OnFinishReached()
 			{
-				//TODO - should actually relate this message to some other class.
-				monster.Release();
+				MonsterReachedFinalDestination?.Invoke(monster);
 			}
 		}
     }

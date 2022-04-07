@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace TowerDefence
+namespace TowerDefence.Towers
 {
     //TODO - that class should be responsible for upgrading and\or selling tower.
     public class Tower : MonoBehaviour

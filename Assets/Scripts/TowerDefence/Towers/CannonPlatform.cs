@@ -1,11 +1,12 @@
 ﻿using Cysharp.Threading.Tasks;
+using Shared.Mathematics;
 using TowerDefence.Monsters;
 using TowerDefence.Projectiles;
 using UnityEngine;
 
-namespace TowerDefence
+namespace TowerDefence.Towers
 {
-    public sealed class CannonPlatform : WeaponPlatform
+	public sealed class CannonPlatform : WeaponPlatform
 	{
 		[SerializeField]
 		private CannonBall m_projectilePrefab;
@@ -19,8 +20,8 @@ namespace TowerDefence
 		[SerializeField]
 		private Transform m_xRotor;
 
-        protected override ISolution AcquireSolution(IMonster target)
-        {
+		protected override ISolution AcquireSolution(IMonster target)
+		{
 			if (m_projectilePrefab == null)
 			{
 				return null;
@@ -53,11 +54,11 @@ namespace TowerDefence
 			}
 		}
 
-        protected override void DrawGizmos()
-        {
-            base.DrawGizmos();
+		protected override void DrawGizmos()
+		{
+			base.DrawGizmos();
 			Gizmos.DrawRay(m_shootPoint.position, m_shootPoint.forward * 100);
-        }
+		}
 
 		private struct TargetData
 		{
@@ -77,8 +78,8 @@ namespace TowerDefence
 		private sealed class Solution : ISolution
 		{
 			private readonly CannonPlatform m_canon;
-            private readonly TargetData m_data;
-            private readonly float m_rotationY;
+			private readonly TargetData m_data;
+			private readonly float m_rotationY;
 			private readonly float m_rotationX;
 
 			//TODO - turn predictedPosition into rotation deltas.
@@ -92,8 +93,8 @@ namespace TowerDefence
 				//Debug.Log(m_rotationX);
 			}
 
-            async UniTask<bool> ISolution.ExecuteAsync()
-            {
+			async UniTask<bool> ISolution.ExecuteAsync()
+			{
 				//TODO - implement rotation here.
 				//var rotationY = m_canon.m_yRotor.localRotation.eulerAngles;
 				//m_canon.m_xRotor.RotateAround(m_canon.m_xRotor.position, m_canon.m_xRotor.right, m_rotationX);
@@ -102,6 +103,6 @@ namespace TowerDefence
 				Instantiate(m_canon.m_projectilePrefab, m_canon.m_shootPoint.position, m_canon.m_shootPoint.rotation);
 				return true;
 			}
-        }
+		}
 	}
 }

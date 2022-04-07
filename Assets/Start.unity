@@ -404,10 +404,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e395dffd705ab04998c6c8f8e651dc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _towers:
+  m_config: {fileID: 11400000, guid: e5d9c9b09e636e84387fce0759e872b3, type: 2}
+  m_towers:
   - {fileID: 1005724820}
   - {fileID: 1639972841}
-  _spawners:
+  m_spawners:
   - {fileID: 780892720}
 --- !u!850595691 &446878640
 LightingSettings:

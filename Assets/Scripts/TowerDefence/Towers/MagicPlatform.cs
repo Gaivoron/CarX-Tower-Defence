@@ -3,7 +3,7 @@ using TowerDefence.Monsters;
 using TowerDefence.Projectiles;
 using UnityEngine;
 
-namespace TowerDefence
+namespace TowerDefence.Towers
 {
     public sealed class MagicPlatform : WeaponPlatform
 	{

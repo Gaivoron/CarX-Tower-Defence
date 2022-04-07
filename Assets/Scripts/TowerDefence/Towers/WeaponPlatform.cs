@@ -4,21 +4,21 @@ using TowerDefence.Monsters;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 
-namespace TowerDefence
+namespace TowerDefence.Towers
 {
-    public abstract class WeaponPlatform : MonoBehaviour, IPlatform
+	public abstract class WeaponPlatform : MonoBehaviour, IPlatform
 	{
 		[UnityEngine.Serialization.FormerlySerializedAs("m_shootInterval")]
 		public float m_rechargeDuration = 0.5f;
 		public float m_range = 4f;
 
 		private float m_rechargeProgress = 0f;
-        private IGameplayData m_data;
+		private IGameplayData m_data;
 
 		private IEnumerable<IMonster> Monsters => m_data.MonsterRoster.Monsters;
 
-        public void Initialize(IGameplayData data)
-        {
+		public void Initialize(IGameplayData data)
+		{
 			m_data = data;
 			UpdateCycleAsync().Forget();
 		}
@@ -41,8 +41,8 @@ namespace TowerDefence
 			}
 		}
 
-        private async UniTask UpdateCycleAsync()
-        {
+		private async UniTask UpdateCycleAsync()
+		{
 			while (true)
 			{
 				await UpdateAsync();
@@ -78,7 +78,7 @@ namespace TowerDefence
 			//Debug.Log($"{name}.{GetType().Name}.{nameof(AcquireSolutionAsync)}");
 			ISolution solution;
 
-            while (true)
+			while (true)
 			{
 				solution = AcquireSolution();
 				if (solution != null)
@@ -109,16 +109,16 @@ namespace TowerDefence
 		private bool IsValidTarget(IMonster target) => IsWithinReach(target.Mover.Position);
 
 		private void OnDrawGizmosSelected()
-        {
+		{
 			var originalColor = Gizmos.color;
 			Gizmos.color = Color.yellow;
 			DrawGizmos();
 			Gizmos.color = originalColor;
-        }
+		}
 
 		protected virtual void DrawGizmos()
 		{
 			Gizmos.DrawWireSphere(transform.position, m_range);
 		}
-    }
+	}
 }

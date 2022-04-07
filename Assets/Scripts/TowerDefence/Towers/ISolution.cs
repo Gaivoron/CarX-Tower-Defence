@@ -1,6 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 
-namespace TowerDefence
+namespace TowerDefence.Towers
 {
     public interface ISolution
 	{

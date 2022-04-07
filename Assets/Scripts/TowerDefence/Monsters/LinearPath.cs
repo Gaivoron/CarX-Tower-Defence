@@ -40,6 +40,7 @@ namespace TowerDefence.Monsters
 
         public Vector3 GetPosition(float progress)
         {
+            //TODO - clamp result between 0 and Length?
             return transform.position + (progress / Length) * Distance;
         }
     }

@@ -13,7 +13,24 @@ namespace TowerDefence.Monsters
         private IPath m_path;
 		private float m_progress;
 
+		float IMover.EstimatedTime
+		{
+			get
+			{
+				//TODO - take into account any (de)buffs that are currently modifying speed.
+				return (m_path.Length - m_progress) / m_speed;
+			}
+		}
+
 		Vector3 IMover.Position => transform.position;
+
+		Vector3 IMover.PredictPosition(float time)
+		{
+			//TODO - take into account any (de)buffs that are currently modifying speed.
+			var predictedDelta = time * m_speed;
+			var predictedProgress = m_progress + predictedDelta;
+			return m_path.GetPosition(predictedProgress);
+		}
 
 		public void SetPath(IPath path)
 		{

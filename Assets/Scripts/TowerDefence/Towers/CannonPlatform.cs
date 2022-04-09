@@ -7,8 +7,10 @@ using UnityEngine;
 
 namespace TowerDefence.Towers
 {
-	public sealed class CannonPlatform : WeaponPlatform
+    public sealed partial class CannonPlatform : WeaponPlatform
 	{
+		private const float TimeThreshold = 1f / 24;
+
 		[SerializeField]
 		private CannonBall m_projectilePrefab;
 		[SerializeField]
@@ -19,7 +21,15 @@ namespace TowerDefence.Towers
 		[SerializeField]
 		private Transform m_yRotor;
 		[SerializeField]
+		private float m_yRotationSpeed = 0.5f;
+		[SerializeField]
 		private Transform m_xRotor;
+		[SerializeField]
+		private float m_xRotationSpeed = 180;
+
+		private float m_currentXRotation = 0f;
+		private float m_currentYRotation = 0f;
+		private Vector3 CurrentRotations => new Vector3(m_currentXRotation, m_currentYRotation);
 
 		protected override ISolution AcquireSolution(IMonster target)
 		{
@@ -30,14 +40,13 @@ namespace TowerDefence.Towers
 
 			var mover = target.Mover;
 			var maxTime = mover.EstimatedTime;
-			var targeting = new Dichotomy<ITargetData>(GetTargetingData, data => data.HitTime - data.FlightTime, 0, maxTime).GetSolution(1f / 24);
+			var targeting = new Dichotomy<ITargetData>(GetTargetingData, Mesure, 0, maxTime).GetSolution(TimeThreshold);
 			if (!targeting.HasValue)
 			{
 				return null;
 			}
 
-			var forecastedPosition = targeting.Value.Item2.Point;
-			if (!IsWithinReach(forecastedPosition))
+			if (!IsWithinReach(targeting.Value.Item2.Point))
 			{
 				return null;
 			}
@@ -48,65 +57,91 @@ namespace TowerDefence.Towers
 			{
 				var predictedPosition = mover.Position;
 				//TODO - take into account actual position of m_shootPoint when cannon will be facing predicted point?
-				var flightTime = Vector3.Distance(m_shootPoint.position, predictedPosition) / m_projectilePrefab.Speed;
+				var direction = predictedPosition - m_shootPoint.position;
+				var flightTime = direction.magnitude / m_projectilePrefab.Speed;
 
-				var preparationTime = hitTime - flightTime;
+				var currentOrientation = m_shootPoint.forward;
+				var yDelta = GetRotation(Vector3.up);
+				var xDelta = GetRotation(Vector3.left);
+
 				return new TargetData
 				{
 					Point = predictedPosition,
 					HitTime = hitTime,
 					FlightTime = flightTime,
+					Angles = CurrentRotations + new Vector3(xDelta, yDelta),
+					RotationTime = Mathf.Max(Mathf.Abs(yDelta / m_yRotationSpeed), Mathf.Abs(xDelta / m_xRotationSpeed))
 				};
+
+				float GetRotation(Vector3 axis) => Vector3.SignedAngle(Vector3.ProjectOnPlane(currentOrientation, axis), Vector3.ProjectOnPlane(direction, axis), axis);
 			}
+
+			float Mesure(ITargetData data) => data.HitTime - data.FlightTime - data.RotationTime;
 		}
 
 		protected override void DrawGizmos()
 		{
 			base.DrawGizmos();
-			Gizmos.DrawRay(m_shootPoint.position, m_shootPoint.forward * 100);
+			Gizmos.DrawRay(m_shootPoint.position, m_shootPoint.forward * m_range);
 		}
-
-		private interface ITargetData
-		{
-			Vector3 Point { get; }
-			float HitTime { get; }
-			float FlightTime { get; }
-		}
-		private struct TargetData : ITargetData
-		{
-			public Vector3 Point { get; set; }
-			public float HitTime { get; set; }
-			public float FlightTime { get; set; }
-		}
-
 
 		private sealed class Solution : ISolution
 		{
+			private const float TimeThreshold = 1f / 24;
+			private const float AngularThreshold = 0.001f;
+
 			private readonly CannonPlatform m_canon;
 			private readonly ITargetData m_data;
-			private readonly float m_rotationY;
-			private readonly float m_rotationX;
+			//private readonly float m_rotationY;
+			//private readonly float m_rotationX;
 
 			//TODO - turn predictedPosition into rotation deltas.
 			public Solution(CannonPlatform canon, ITargetData data)
 			{
 				m_canon = canon;
 				m_data = data;
-				var direction = data.Point - m_canon.transform.position;
-				m_rotationY = Vector3.SignedAngle(m_canon.m_yRotor.forward, direction, Vector3.up);
-				//m_rotationX = -Vector3.SignedAngle(m_canon.m_xRotor.forward, direction, m_canon.m_xRotor.right);
-				//Debug.Log(m_rotationX);
 			}
 
 			async UniTask<bool> ISolution.ExecuteAsync(CancellationToken cancellation)
 			{
-				//TODO - implement rotation here.
-				//var rotationY = m_canon.m_yRotor.localRotation.eulerAngles;
-				//m_canon.m_xRotor.RotateAround(m_canon.m_xRotor.position, m_canon.m_xRotor.right, m_rotationX);
-				m_canon.m_yRotor.RotateAround(m_canon.m_yRotor.position, Vector3.up, m_rotationY);
+				await Rotate(cancellation);
+
 				m_canon.m_xRotor.LookAt(m_data.Point);
 				Instantiate(m_canon.m_projectilePrefab, m_canon.m_shootPoint.position, m_canon.m_shootPoint.rotation);
 				return true;
+			}
+
+			private async UniTask Rotate(CancellationToken cancellation)
+			{
+				await UniTask.WhenAll(RotateAroundY(cancellation));
+				//TODO - implement rotation here.
+			}
+
+			private async UniTask RotateAroundY(CancellationToken cancellation)
+			{
+				var time = 0f;
+				var targetAngle = m_data.Angles.y;
+				var sign = Mathf.Sign(GetTail());
+				while (m_data.RotationTime > time + TimeThreshold && Mathf.Abs(GetTail()) > AngularThreshold)
+				{
+					await UniTask.Yield(cancellation);
+					time += Time.deltaTime;
+					var delta = Time.deltaTime * m_canon.m_yRotationSpeed;
+					var tail = Mathf.Abs(GetTail());
+					if (delta > tail)
+					{
+						delta = tail;
+					}
+					if (delta > 0 && sign < 0)
+					{
+						delta = -delta;
+					}
+
+					m_canon.m_currentYRotation += delta;
+					m_canon.m_yRotor.Rotate(Vector3.up, delta);
+				}
+
+				float GetTail() => targetAngle - m_canon.m_currentYRotation;
 			}
 		}
 	}

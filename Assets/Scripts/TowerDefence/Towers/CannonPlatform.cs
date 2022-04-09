@@ -17,19 +17,13 @@ namespace TowerDefence.Towers
 		[Space]
 		[Header("Rotation")]
 		[SerializeField]
-		private Transform m_yRotor;
+		private Rotor m_yRotor;
 		[SerializeField]
-		private float m_yRotationSpeed = 0.5f;
-		[SerializeField]
-		private Transform m_xRotor;
-		[SerializeField]
-		private float m_xRotationSpeed = 180;
+		private Rotor m_xRotor;
 
-		private float m_currentXRotation = 0f;
-		private float m_currentYRotation = 0f;
         private ITargetData m_solution;
 
-        private Vector3 CurrentRotations => new Vector3(m_currentXRotation, m_currentYRotation);
+        private Vector3 CurrentRotations => new Vector3(m_xRotor.Angle, m_yRotor.Angle);
 
 		protected override ISolution AcquireSolution(IMonster target)
 		{
@@ -62,8 +56,8 @@ namespace TowerDefence.Towers
 				var flightTime = direction.magnitude / m_projectilePrefab.Speed;
 
 				var currentOrientation = m_shootPoint.forward;
-				var yDelta = GetRotation(Vector3.up);
-				var xDelta = GetRotation(Vector3.right);
+				var xDelta = m_xRotor.GetAngle(direction);
+				var yDelta = m_yRotor.GetAngle(direction);
 
 				return new TargetData
 				{
@@ -71,13 +65,11 @@ namespace TowerDefence.Towers
 					HitTime = hitTime,
 					FlightTime = flightTime,
 					Angles = CurrentRotations + new Vector3(xDelta, yDelta),
-					RotationTime = Mathf.Max(Mathf.Abs(yDelta / m_yRotationSpeed), Mathf.Abs(xDelta / m_xRotationSpeed))
+					RotationTime = Mathf.Max(Mathf.Abs(xDelta / m_xRotor.Speed), Mathf.Abs(yDelta / m_yRotor.Speed))
 				};
+            }
 
-				float GetRotation(Vector3 axis) => Vector3.SignedAngle(Vector3.ProjectOnPlane(currentOrientation, axis), Vector3.ProjectOnPlane(direction, axis), axis);
-			}
-
-			float Mesure(ITargetData data) => data.HitTime - data.FlightTime - data.RotationTime;
+            float Mesure(ITargetData data) => data.HitTime - data.FlightTime - data.RotationTime;
 		}
 
 		protected override void DrawGizmos()

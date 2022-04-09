@@ -33,36 +33,24 @@ namespace TowerDefence.Towers
 
 			private async UniTask RotateAroundXAsync(CancellationToken cancellation)
 			{
-				await RotateAsync(() => m_data.Angles.x - m_canon.m_currentXRotation, Rotate, cancellation);
-
-				void Rotate(float delta)
-				{
-					m_canon.m_currentXRotation += delta;
-					m_canon.m_xRotor.Rotate(Vector3.right, delta);
-				}
+				await RotateAsync(m_canon.m_xRotor, m_data.Angles.x, cancellation);
 			}
 
 			private async UniTask RotateAroundYAsync(CancellationToken cancellation)
 			{
-				await RotateAsync(() => m_data.Angles.y - m_canon.m_currentYRotation, Rotate, cancellation);
-
-				void Rotate(float delta)
-				{
-					m_canon.m_currentYRotation += delta;
-					m_canon.m_yRotor.Rotate(Vector3.up, delta);
-				}
+				await RotateAsync(m_canon.m_yRotor, m_data.Angles.y, cancellation);
 			}
 
-			private async UniTask RotateAsync(Func<float> getTail, Action<float> rotate, CancellationToken cancellation)
+			private async UniTask RotateAsync(Rotor rotor, float target, CancellationToken cancellation)
 			{
 				var time = 0f;
-				var sign = Mathf.Sign(getTail());
-				while (m_data.RotationTime > time + TimeThreshold && getTail() * sign > AngularThreshold)
+				var sign = Mathf.Sign(GetTail());
+				while (m_data.RotationTime > time + TimeThreshold && GetTail() * sign > AngularThreshold)
 				{
 					await UniTask.Yield(cancellation);
 					time += Time.deltaTime;
-					var delta = Time.deltaTime * m_canon.m_yRotationSpeed;
-					var tail = Mathf.Abs(getTail());
+					var delta = Time.deltaTime * rotor.Speed;
+					var tail = Mathf.Abs(GetTail());
 					if (delta > tail)
 					{
 						delta = tail;
@@ -72,8 +60,10 @@ namespace TowerDefence.Towers
 						delta = -delta;
 					}
 
-					rotate(delta);
+					rotor.Angle += delta;
 				}
+
+				float GetTail() => target - rotor.Angle;
 			}
 		}
 	}

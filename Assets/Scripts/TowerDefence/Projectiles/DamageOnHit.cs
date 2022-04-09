@@ -2,14 +2,14 @@
 using UnityEngine;
 namespace TowerDefence.Projectiles
 {
-	public class DamagingProjectile : MonoBehaviour
+	public class DamageOnHit : MonoBehaviour
 	{
 		//TODO - make private?
 		public int m_damage = 10;
 
 		private void OnTriggerEnter(Collider other)
 		{
-			//TODO - check flag on gameobject?
+			//TODO - check flag on gameObject?
 			var monster = other.gameObject.GetComponent<IMonster>();
 			if (monster == null)
 			{

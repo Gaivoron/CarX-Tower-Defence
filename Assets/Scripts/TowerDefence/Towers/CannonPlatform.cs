@@ -30,7 +30,7 @@ namespace TowerDefence.Towers
 
 			var mover = target.Mover;
 			var maxTime = mover.EstimatedTime;
-			var targeting = new Dichotomy<TargetData>(GetTargeyingData, data => data.Time - data.Flight, 0, maxTime).GetSolution(1f / 24);
+			var targeting = new Dichotomy<ITargetData>(GetTargetingData, data => data.HitTime - data.FlightTime, 0, maxTime).GetSolution(1f / 24);
 			if (!targeting.HasValue)
 			{
 				return null;
@@ -44,14 +44,19 @@ namespace TowerDefence.Towers
 
 			return new Solution(this, targeting.Value.Item2);
 
-			TargetData GetTargeyingData(float hitTime)
+			ITargetData GetTargetingData(float hitTime)
 			{
 				var predictedPosition = mover.Position;
 				//TODO - take into account actual position of m_shootPoint when cannon will be facing predicted point?
 				var flightTime = Vector3.Distance(m_shootPoint.position, predictedPosition) / m_projectilePrefab.Speed;
 
 				var preparationTime = hitTime - flightTime;
-				return new TargetData(predictedPosition, hitTime, flightTime);
+				return new TargetData
+				{
+					Point = predictedPosition,
+					HitTime = hitTime,
+					FlightTime = flightTime,
+				};
 			}
 		}
 
@@ -61,30 +66,29 @@ namespace TowerDefence.Towers
 			Gizmos.DrawRay(m_shootPoint.position, m_shootPoint.forward * 100);
 		}
 
-		private struct TargetData
+		private interface ITargetData
 		{
-			public Vector3 Point { get; }
-			public float Time { get; }
-			public float Flight { get; }
-
-			public TargetData(Vector3 point, float time, float flight)
-			{
-				Point = point;
-				Time = time;
-				Flight = flight;
-			}
+			Vector3 Point { get; }
+			float HitTime { get; }
+			float FlightTime { get; }
+		}
+		private struct TargetData : ITargetData
+		{
+			public Vector3 Point { get; set; }
+			public float HitTime { get; set; }
+			public float FlightTime { get; set; }
 		}
 
 
 		private sealed class Solution : ISolution
 		{
 			private readonly CannonPlatform m_canon;
-			private readonly TargetData m_data;
+			private readonly ITargetData m_data;
 			private readonly float m_rotationY;
 			private readonly float m_rotationX;
 
 			//TODO - turn predictedPosition into rotation deltas.
-			public Solution(CannonPlatform canon, TargetData data)
+			public Solution(CannonPlatform canon, ITargetData data)
 			{
 				m_canon = canon;
 				m_data = data;

@@ -1,6 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
-using Shared.Mathematics;
-using System.Threading;
+﻿using Shared.Mathematics;
 using TowerDefence.Monsters;
 using TowerDefence.Projectiles;
 using UnityEngine;
@@ -29,7 +27,9 @@ namespace TowerDefence.Towers
 
 		private float m_currentXRotation = 0f;
 		private float m_currentYRotation = 0f;
-		private Vector3 CurrentRotations => new Vector3(m_currentXRotation, m_currentYRotation);
+        private ITargetData m_solution;
+
+        private Vector3 CurrentRotations => new Vector3(m_currentXRotation, m_currentYRotation);
 
 		protected override ISolution AcquireSolution(IMonster target)
 		{
@@ -51,7 +51,8 @@ namespace TowerDefence.Towers
 				return null;
 			}
 
-			return new Solution(this, targeting.Value.Item2);
+			m_solution = targeting.Value.Item2;
+			return new CannonFiringSolution(this, targeting.Value.Item2);
 
 			ITargetData GetTargetingData(float hitTime)
 			{
@@ -62,7 +63,7 @@ namespace TowerDefence.Towers
 
 				var currentOrientation = m_shootPoint.forward;
 				var yDelta = GetRotation(Vector3.up);
-				var xDelta = GetRotation(Vector3.left);
+				var xDelta = GetRotation(Vector3.right);
 
 				return new TargetData
 				{
@@ -83,65 +84,13 @@ namespace TowerDefence.Towers
 		{
 			base.DrawGizmos();
 			Gizmos.DrawRay(m_shootPoint.position, m_shootPoint.forward * m_range);
-		}
 
-		private sealed class Solution : ISolution
-		{
-			private const float TimeThreshold = 1f / 24;
-			private const float AngularThreshold = 0.001f;
-
-			private readonly CannonPlatform m_canon;
-			private readonly ITargetData m_data;
-			//private readonly float m_rotationY;
-			//private readonly float m_rotationX;
-
-			//TODO - turn predictedPosition into rotation deltas.
-			public Solution(CannonPlatform canon, ITargetData data)
+			if (m_solution != null)
 			{
-				m_canon = canon;
-				m_data = data;
-			}
-
-			async UniTask<bool> ISolution.ExecuteAsync(CancellationToken cancellation)
-			{
-				await Rotate(cancellation);
-
-				m_canon.m_xRotor.LookAt(m_data.Point);
-				Instantiate(m_canon.m_projectilePrefab, m_canon.m_shootPoint.position, m_canon.m_shootPoint.rotation);
-				return true;
-			}
-
-			private async UniTask Rotate(CancellationToken cancellation)
-			{
-				await UniTask.WhenAll(RotateAroundY(cancellation));
-				//TODO - implement rotation here.
-			}
-
-			private async UniTask RotateAroundY(CancellationToken cancellation)
-			{
-				var time = 0f;
-				var targetAngle = m_data.Angles.y;
-				var sign = Mathf.Sign(GetTail());
-				while (m_data.RotationTime > time + TimeThreshold && Mathf.Abs(GetTail()) > AngularThreshold)
-				{
-					await UniTask.Yield(cancellation);
-					time += Time.deltaTime;
-					var delta = Time.deltaTime * m_canon.m_yRotationSpeed;
-					var tail = Mathf.Abs(GetTail());
-					if (delta > tail)
-					{
-						delta = tail;
-					}
-					if (delta > 0 && sign < 0)
-					{
-						delta = -delta;
-					}
-
-					m_canon.m_currentYRotation += delta;
-					m_canon.m_yRotor.Rotate(Vector3.up, delta);
-				}
-
-				float GetTail() => targetAngle - m_canon.m_currentYRotation;
+				var color = Gizmos.color;
+				Gizmos.color = Color.green;
+				Gizmos.DrawRay(m_shootPoint.position, m_solution.Point - m_shootPoint.position);
+				Gizmos.color = color;
 			}
 		}
 	}

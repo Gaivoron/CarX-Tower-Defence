@@ -4757,6 +4757,7 @@ GameObject:
   - component: {fileID: 11464742}
   - component: {fileID: 5936076768165877321}
   - component: {fileID: -6449630743866576169}
+  - component: {fileID: 4469275849365087456}
   m_Layer: 0
   m_Name: CannonBall
   m_TagString: Untagged
@@ -4866,6 +4867,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ce962be6fdbd584b992e376488f696f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_targetTag: Monster
   m_damage: 6
 --- !u!114 &-6449630743866576169
 MonoBehaviour:
@@ -4881,3 +4883,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_factor: 1.2
   m_collider: {fileID: 13564744}
+--- !u!114 &4469275849365087456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 123704}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05fc517319d0229448a95b431f773ed0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_targetTag: Map

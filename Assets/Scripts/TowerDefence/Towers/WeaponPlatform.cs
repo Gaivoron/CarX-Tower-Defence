@@ -116,7 +116,7 @@ namespace TowerDefence.Towers
 
 		private bool IsValidTarget(IMonster target) => IsWithinReach(target.Mover.Position);
 
-		private void OnDrawGizmosSelected()
+		private void OnDrawGizmos()
 		{
 			var originalColor = Gizmos.color;
 			Gizmos.color = Color.yellow;

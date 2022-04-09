@@ -11,6 +11,11 @@ namespace TowerDefence.Towers
 			public float FlightTime { get; set; }
 			public float RotationTime { get; set; }
             public Vector3 Angles { get; set; }
+
+            public override string ToString()
+            {
+                return $"{nameof(Point)} = {Point}, {nameof(Angles)} = {Angles}";
+            }
         }
 	}
 }

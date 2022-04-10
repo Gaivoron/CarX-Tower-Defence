@@ -1,5 +1,4 @@
 ﻿using Cysharp.Threading.Tasks;
-using System;
 using System.Threading;
 using UnityEngine;
 
@@ -62,6 +61,7 @@ namespace TowerDefence.Towers
 
 					rotor.Angle += delta;
 				}
+				rotor.Angle = target;
 
 				float GetTail() => target - rotor.Angle;
 			}

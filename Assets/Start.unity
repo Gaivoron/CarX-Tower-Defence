@@ -160,6 +160,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2062558235}
     m_Modifications:
+    - target: {fileID: 446918, guid: 59e6d8e8602973b448a2f2eddd7afee0, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 475446, guid: 59e6d8e8602973b448a2f2eddd7afee0, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -207,7 +211,7 @@ PrefabInstance:
     - target: {fileID: 11480962, guid: 59e6d8e8602973b448a2f2eddd7afee0, type: 3}
       propertyPath: m_shootPoint
       value: 
-      objectReference: {fileID: 1262217986}
+      objectReference: {fileID: 1871136953}
     - target: {fileID: 11480962, guid: 59e6d8e8602973b448a2f2eddd7afee0, type: 3}
       propertyPath: m_xRotationSpeed
       value: 90
@@ -256,6 +260,11 @@ PrefabInstance:
     - target: {fileID: 19867354, guid: 59e6d8e8602973b448a2f2eddd7afee0, type: 3}
       propertyPath: InitialModule.startSizeZ.minMaxState
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3517253376380062973, guid: 59e6d8e8602973b448a2f2eddd7afee0,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 59e6d8e8602973b448a2f2eddd7afee0, type: 3}
@@ -1207,7 +1216,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1262217986
 Transform:
   m_ObjectHideFlags: 0

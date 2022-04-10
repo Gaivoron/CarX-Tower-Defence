@@ -7,7 +7,7 @@ namespace TowerDefence.Towers
 {
     public sealed partial class CannonPlatform : WeaponPlatform
 	{
-		private const float TimeThreshold = 1f / 24;
+		private const float TimeThreshold = 1f / 100;
 
 		[SerializeField]
 		private CannonBall m_projectilePrefab;
@@ -50,12 +50,11 @@ namespace TowerDefence.Towers
 
 			ITargetData GetTargetingData(float hitTime)
 			{
-				var predictedPosition = mover.Position;
+				var predictedPosition = mover.PredictPosition(hitTime);
 				//TODO - take into account actual position of m_shootPoint when cannon will be facing predicted point?
 				var direction = predictedPosition - m_shootPoint.position;
 				var flightTime = direction.magnitude / m_projectilePrefab.Speed;
 
-				var currentOrientation = m_shootPoint.forward;
 				var xDelta = m_xRotor.GetAngle(direction);
 				var yDelta = m_yRotor.GetAngle(direction);
 

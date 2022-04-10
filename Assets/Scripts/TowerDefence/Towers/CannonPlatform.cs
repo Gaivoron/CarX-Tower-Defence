@@ -10,7 +10,7 @@ namespace TowerDefence.Towers
 		private const float TimeThreshold = 1f / 100;
 
 		[SerializeField]
-		private CannonBall m_projectilePrefab;
+		private ProjectileBase m_projectilePrefab;
 		[SerializeField]
 		private Transform m_shootPoint;
 
@@ -54,9 +54,10 @@ namespace TowerDefence.Towers
 
 				var startingPosition = m_shootPoint.position;
 				//TODO - incapsulate within specific projectile implementation?
-				var calibration = m_projectilePrefab.Target(predictedPosition - startingPosition);
+				var calibration = m_projectilePrefab.Target(predictedPosition - startingPosition, maxTime);
 				if (calibration == null)
 				{
+					Debug.LogWarning($"{nameof(calibration)} is NULL");
 					return null;
 				}
 
@@ -78,7 +79,7 @@ namespace TowerDefence.Towers
 				};
             }
 
-            float Mesure(ITargetData data) => data.HitTime - data.FlightTime - data.RotationTime;
+            float Mesure(ITargetData data) => data != null ? data.HitTime - data.FlightTime - data.RotationTime : float.PositiveInfinity;
 		}
 
 		protected override void DrawGizmos()

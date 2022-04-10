@@ -2,14 +2,15 @@
 
 namespace TowerDefence.Projectiles
 {
-    public sealed class CannonBall : MonoBehaviour
+
+    public sealed class CannonBall : ProjectileBase
 	{
 		[SerializeField]
 		private float m_speed = 40f;
 
 		//public float Speed => m_speed;
 
-		public ICalibration Target(Vector3 lasersight)
+		public override ICalibration Target(Vector3 lasersight, float _)
 		{
 			return new Calibration
 			{

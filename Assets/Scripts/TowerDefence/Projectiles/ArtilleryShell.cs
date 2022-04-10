@@ -24,17 +24,21 @@ namespace TowerDefence.Projectiles
             }
 
             var time = timeAssesment.Value.Item1;
-            var Vy = (distance.y - m_forceY * time) / (time * time);
+            var Vy = (distance.y - m_forceY * time) / (m_speed * time * time);
             if (Mathf.Abs(Vy) > 1)
             {
+                Debug.LogWarning($"{GetType().Name}.{nameof(Target)} got {nameof(Vy)} = {Vy}");
                 //TODO - try another root?
                 return null;
             }
 
             var tangA = 2 * m_speed * time + m_forceY;
             var angle = Mathf.Atan(tangA) * 180f / Mathf.PI;
-
-            var orientation = Quaternion.AngleAxis(angle, Vector3.right) * Vector3.Project(distance, Vector3.up).normalized;
+            Debug.Log($"{GetType().Name}.{nameof(Target)} got {nameof(angle)} = {angle}");
+            var flatDirection = Vector3.ProjectOnPlane(distance, Vector3.up).normalized;
+            var rotationAxis = /*Vector3.Cross(flatDirection,*/ Vector3.right/*)*/;
+            var orientation = Quaternion.AngleAxis(angle, rotationAxis) * flatDirection;
+            Debug.Log($"{GetType().Name}.{nameof(Target)} : {distance} -> {flatDirection} -> {orientation}");
             return new Calibration
             {
                 Time = time,
@@ -63,7 +67,7 @@ namespace TowerDefence.Projectiles
             m_time += Time.deltaTime;
             //TODO - implement movement here.
 
-            transform.position = m_start + m_speed * m_time * transform.forward + m_speed * m_speed * m_forces;
+            transform.position = m_start + m_speed * m_time * transform.forward + m_time * m_time * m_forces;
         }
     }
 }

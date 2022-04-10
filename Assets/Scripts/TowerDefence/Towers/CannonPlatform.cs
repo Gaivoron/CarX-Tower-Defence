@@ -53,6 +53,7 @@ namespace TowerDefence.Towers
 				var predictedPosition = mover.PredictPosition(hitTime);
 
 				var startingPosition = m_shootPoint.position;
+				//TODO - incapsulate within specific projectile implementation?
 				var direction = predictedPosition - startingPosition;
 				var flightTime = direction.magnitude / m_projectilePrefab.Speed;
 				var orientationY = m_yRotor.Forward;

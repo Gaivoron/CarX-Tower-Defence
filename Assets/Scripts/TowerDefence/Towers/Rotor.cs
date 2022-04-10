@@ -16,6 +16,8 @@ namespace TowerDefence.Towers
 
 			private float m_angle = 0f;
 
+			public Vector3 Axis => m_axis;
+			public Vector3 Forward => m_rotor.forward;
 			public float Speed => m_speed;
 
 			public float Angle
@@ -30,8 +32,6 @@ namespace TowerDefence.Towers
 					}
 				}
 			}
-
-            public float GetAngle(Vector3 direction) => Vector3.SignedAngle(Vector3.ProjectOnPlane(m_rotor.forward, m_axis), Vector3.ProjectOnPlane(direction, m_axis), m_axis);
 		}
 	}
 }

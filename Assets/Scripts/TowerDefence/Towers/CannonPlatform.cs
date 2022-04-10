@@ -21,7 +21,7 @@ namespace TowerDefence.Towers
 		[SerializeField]
 		private Rotor m_xRotor;
 
-        private ITargetData m_solution;
+        //private ITargetData m_solution;
 
         private Vector3 CurrentRotations => new Vector3(m_xRotor.Angle, m_yRotor.Angle);
 
@@ -45,18 +45,21 @@ namespace TowerDefence.Towers
 				return null;
 			}
 
-			m_solution = targeting.Value.Item2;
+			//m_solution = targeting.Value.Item2;
 			return new CannonFiringSolution(this, targeting.Value.Item2);
 
 			ITargetData GetTargetingData(float hitTime)
 			{
 				var predictedPosition = mover.PredictPosition(hitTime);
-				//TODO - take into account actual position of m_shootPoint when cannon will be facing predicted point?
-				var direction = predictedPosition - m_shootPoint.position;
-				var flightTime = direction.magnitude / m_projectilePrefab.Speed;
 
-				var xDelta = m_xRotor.GetAngle(direction);
-				var yDelta = m_yRotor.GetAngle(direction);
+				var startingPosition = m_shootPoint.position;
+				var direction = predictedPosition - startingPosition;
+				var flightTime = direction.magnitude / m_projectilePrefab.Speed;
+				var orientationY = m_yRotor.Forward;
+				var directionY = Vector3.ProjectOnPlane(direction, m_yRotor.Axis);
+				var yDelta = Vector3.SignedAngle(orientationY, directionY, m_yRotor.Axis);
+				var orientationX = Quaternion.AngleAxis(yDelta, m_yRotor.Axis) * m_xRotor.Forward;
+				var xDelta = Vector3.SignedAngle(orientationX, direction, m_xRotor.Axis);
 
 				return new TargetData
 				{
@@ -75,7 +78,7 @@ namespace TowerDefence.Towers
 		{
 			base.DrawGizmos();
 			Gizmos.DrawRay(m_shootPoint.position, m_shootPoint.forward * m_range);
-
+			/*
 			if (m_solution != null)
 			{
 				var color = Gizmos.color;
@@ -83,6 +86,7 @@ namespace TowerDefence.Towers
 				Gizmos.DrawRay(m_shootPoint.position, m_solution.Point - m_shootPoint.position);
 				Gizmos.color = color;
 			}
+			*/
 		}
 	}
 }

@@ -54,8 +54,14 @@ namespace TowerDefence.Towers
 
 				var startingPosition = m_shootPoint.position;
 				//TODO - incapsulate within specific projectile implementation?
-				var direction = predictedPosition - startingPosition;
-				var flightTime = direction.magnitude / m_projectilePrefab.Speed;
+				var calibration = m_projectilePrefab.Target(predictedPosition - startingPosition);
+				if (calibration == null)
+				{
+					return null;
+				}
+
+				var direction = calibration.Orientation;
+				var flightTime = calibration.Time;
 				var orientationY = m_yRotor.Forward;
 				var directionY = Vector3.ProjectOnPlane(direction, m_yRotor.Axis);
 				var yDelta = Vector3.SignedAngle(orientationY, directionY, m_yRotor.Axis);

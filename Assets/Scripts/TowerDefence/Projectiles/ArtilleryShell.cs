@@ -25,15 +25,15 @@ namespace TowerDefence.Projectiles
             }
 
             var time = times.Select(any => any.Item1).Min();
-            var Vy = (distance.y - m_forceY * time) / (m_speed * time * time);
-            if (Mathf.Abs(Vy) > 1)
+            var Vy = (distance.y - m_forceY * time * time) / (time);
+            if (Mathf.Abs(Vy) > m_speed)
             {
                 Debug.LogWarning($"{GetType().Name}.{nameof(Target)} got {nameof(Vy)} = {Vy}");
                 //TODO - try another root?
                 return null;
             }
 
-            var tangA = 2 * m_speed * time + m_forceY;
+            var tangA = 2 * m_forceY * time + Vy;
             var angle = Mathf.Atan(tangA) * 180f / Mathf.PI;
             Debug.Log($"{GetType().Name}.{nameof(Target)} got {nameof(angle)} = {angle}");
             var flatDirection = Vector3.ProjectOnPlane(distance, Vector3.up).normalized;
@@ -48,11 +48,15 @@ namespace TowerDefence.Projectiles
 
             float GetHeight(float t)
             {
-                //TODO - find a way tro optimize following calculations.
+                return m_forceY * m_forceY * t * t * t * t
+                    - t * t * (2 * m_forceY * distance.y + m_speed * m_speed)
+                    + distance.y * distance.y - distance.x * distance.x - -distance.z * distance.z;
+                /*
                 return Mathf.Pow(m_speed, 2) * Mathf.Pow(t, 4)
                     - (Mathf.Pow(distance.z, 2) + Mathf.Pow(distance.x, 2) + m_speed * Mathf.Pow(m_forceY, 2)) * Mathf.Pow(t, 2)
                     + 2 * m_forceY * distance.y * Mathf.Pow(m_speed, 2) * t
                     - Mathf.Pow(m_speed, 2) * Mathf.Pow(distance.y, 2);
+                */
             }
         }
 

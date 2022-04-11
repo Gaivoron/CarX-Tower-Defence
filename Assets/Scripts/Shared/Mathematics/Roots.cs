@@ -27,7 +27,6 @@ namespace Shared.Mathematics
 				var root = new Dichotomy(ModifiedFunc, m_start, m_end).GetSolution(distanceTolerance);
 				if (!root.HasValue)
 				{
-					Debug.Log($"No more roots. Only {roots.Count}");
 					break;
 				}
 
@@ -35,7 +34,6 @@ namespace Shared.Mathematics
 				roots.Add((coord1, m_func(coord1)));
 			}
 
-			Debug.Log($"Total roots count : {roots.Count}");
 			return roots;
 
 			float ModifiedFunc(float x)

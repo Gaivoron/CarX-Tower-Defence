@@ -35,7 +35,7 @@ namespace TowerDefence.Towers
 			var mover = target.Mover;
 			var maxTime = mover.EstimatedTime;
 			var targeting = new Dichotomy<ITargetData>(GetTargetingData, Mesure, 0, maxTime).GetSolution(TimeThreshold);
-			if (!targeting.HasValue)
+			if (!targeting.HasValue || targeting.Value.Item2 == null)
 			{
 				return null;
 			}

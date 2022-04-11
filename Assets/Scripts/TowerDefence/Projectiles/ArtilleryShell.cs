@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Shared.Mathematics;
+using System.Linq;
 
 namespace TowerDefence.Projectiles
 {
@@ -17,13 +18,13 @@ namespace TowerDefence.Projectiles
         //TODO - pass maxT as well
         public override ICalibration Target(Vector3 distance, float maxTime)
         {
-            var timeAssesment = new Dichotomy<float>(GetHeight, v => v, 0, maxTime).GetSolution(0.01f);
-            if (!timeAssesment.HasValue)
+            var times = new Roots(GetHeight, 4, 0, maxTime).GetSolutions(0.0001f);
+            if (!times.Any())
             {
                 return null;
             }
 
-            var time = timeAssesment.Value.Item1;
+            var time = times.Select(any => any.Item1).Min();
             var Vy = (distance.y - m_forceY * time) / (m_speed * time * time);
             if (Mathf.Abs(Vy) > 1)
             {

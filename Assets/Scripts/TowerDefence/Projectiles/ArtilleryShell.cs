@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using Shared.Mathematics;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace TowerDefence.Projectiles
 {
@@ -16,48 +16,53 @@ namespace TowerDefence.Projectiles
         private float m_time;
 
         //TODO - pass maxT as well
-        public override ICalibration Target(Vector3 distance, float maxTime)
+        public override ICalibration Target(Vector3 distance, float _)
         {
-            var times = new Roots(GetHeight, 4, 0, maxTime).GetSolutions(0.0001f);
+            var A = m_forceY * m_forceY;
+            var B = -(2 * m_forceY * distance.y + m_speed * m_speed);
+            var C = distance.sqrMagnitude;
+
+            var D = B * B - 4 * A * C;
+            if (D < 0)
+            {
+                Debug.Log($"No solution for distance {distance}");
+                return null;
+            }
+
+            var d = Mathf.Sqrt(D);
+            var times = new List<float>(4);
+            var T21 = 0.5f * (-B + d) / A;
+            if (T21 > 0)
+            {
+                times.Add(Mathf.Sqrt(T21));
+            }
+            var T22 = 0.5f * (-B - d) / A;
+            if (T22 > 0)
+            {
+                times.Add(Mathf.Sqrt(T22));
+            }
             if (!times.Any())
             {
                 return null;
             }
 
-            var time = times.Select(any => any.Item1).Min();
+            var time = times.Min();
             var Vy = (distance.y - m_forceY * time * time) / (time);
+            Debug.Log($"{GetType().Name}.{nameof(Target)} got {nameof(Vy)} = {Vy}");
             if (Mathf.Abs(Vy) > m_speed)
             {
-                Debug.LogWarning($"{GetType().Name}.{nameof(Target)} got {nameof(Vy)} = {Vy}");
                 //TODO - try another root?
                 return null;
             }
 
-            var tangA = 2 * m_forceY * time + Vy;
-            var angle = Mathf.Atan(tangA) * 180f / Mathf.PI;
-            Debug.Log($"{GetType().Name}.{nameof(Target)} got {nameof(angle)} = {angle}");
-            var flatDirection = Vector3.ProjectOnPlane(distance, Vector3.up).normalized;
-            var rotationAxis = Vector3.Cross(flatDirection, Vector3.up);
-            var orientation = Quaternion.AngleAxis(angle, rotationAxis) * flatDirection;
-            Debug.Log($"{GetType().Name}.{nameof(Target)} : {distance} -> {flatDirection} -> {orientation}");
+            var orientation = Vector3.ProjectOnPlane(distance, Vector3.up).normalized * Mathf.Sqrt(m_speed * m_speed - Vy * Vy);
+            orientation.y = Vy;
+
             return new Calibration
             {
                 Time = time,
                 Orientation = orientation,
             };
-
-            float GetHeight(float t)
-            {
-                return m_forceY * m_forceY * t * t * t * t
-                    - t * t * (2 * m_forceY * distance.y + m_speed * m_speed)
-                    + distance.y * distance.y - distance.x * distance.x - -distance.z * distance.z;
-                /*
-                return Mathf.Pow(m_speed, 2) * Mathf.Pow(t, 4)
-                    - (Mathf.Pow(distance.z, 2) + Mathf.Pow(distance.x, 2) + m_speed * Mathf.Pow(m_forceY, 2)) * Mathf.Pow(t, 2)
-                    + 2 * m_forceY * distance.y * Mathf.Pow(m_speed, 2) * t
-                    - Mathf.Pow(m_speed, 2) * Mathf.Pow(distance.y, 2);
-                */
-            }
         }
 
         private void Awake()

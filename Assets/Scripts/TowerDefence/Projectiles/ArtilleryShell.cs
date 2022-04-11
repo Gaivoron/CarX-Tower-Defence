@@ -36,7 +36,7 @@ namespace TowerDefence.Projectiles
             var angle = Mathf.Atan(tangA) * 180f / Mathf.PI;
             Debug.Log($"{GetType().Name}.{nameof(Target)} got {nameof(angle)} = {angle}");
             var flatDirection = Vector3.ProjectOnPlane(distance, Vector3.up).normalized;
-            var rotationAxis = /*Vector3.Cross(flatDirection,*/ Vector3.right/*)*/;
+            var rotationAxis = Vector3.Cross(flatDirection, Vector3.up);
             var orientation = Quaternion.AngleAxis(angle, rotationAxis) * flatDirection;
             Debug.Log($"{GetType().Name}.{nameof(Target)} : {distance} -> {flatDirection} -> {orientation}");
             return new Calibration
@@ -67,7 +67,34 @@ namespace TowerDefence.Projectiles
             m_time += Time.deltaTime;
             //TODO - implement movement here.
 
-            transform.position = m_start + m_speed * m_time * transform.forward + m_time * m_time * m_forces;
+            transform.position = GetPosition(m_time);
+        }
+
+        private void OnDrawGizmos()
+        {
+            var color = Gizmos.color;
+            Gizmos.color = Color.red;
+            DrawLines(m_time, m_time + 1, m_time + 2, m_time + 3, m_time + 5);
+            Gizmos.color = color;
+        }
+
+        private void DrawLines(params float[] timestamps)
+        {
+            DrawLines(timestamps.Select(GetPosition).ToArray());
+        }
+
+        private void DrawLines(Vector3[] positions)
+        {
+            var count = positions.Length - 1;
+            for (var i = 0; i < count; ++i)
+            {
+                Gizmos.DrawLine(positions[i], positions[i + 1]);
+            }
+        }
+
+        private Vector3 GetPosition(float time)
+        {
+            return m_start + m_speed * time * transform.forward + time * time * m_forces;
         }
     }
 }

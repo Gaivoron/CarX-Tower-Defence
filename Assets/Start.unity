@@ -164,6 +164,10 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 446918, guid: 59e6d8e8602973b448a2f2eddd7afee0, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 475446, guid: 59e6d8e8602973b448a2f2eddd7afee0, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -247,7 +251,7 @@ PrefabInstance:
     - target: {fileID: 11480962, guid: 59e6d8e8602973b448a2f2eddd7afee0, type: 3}
       propertyPath: m_projectilePrefab
       value: 
-      objectReference: {fileID: 11464742, guid: 4124357cfe121804f9eea0a690ce3b52,
+      objectReference: {fileID: 8296536870725922227, guid: 59579df98e3882a45a81bab62d88ef39,
         type: 3}
     - target: {fileID: 11480962, guid: 59e6d8e8602973b448a2f2eddd7afee0, type: 3}
       propertyPath: m_rechargeDuration

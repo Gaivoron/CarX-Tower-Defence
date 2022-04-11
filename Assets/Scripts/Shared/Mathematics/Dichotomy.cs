@@ -3,7 +3,20 @@ using UnityEngine;
 
 namespace Shared.Mathematics
 {
-    public sealed class Dichotomy<T>
+    public sealed class Dichotomy
+	{
+		private readonly Dichotomy<float> m_resolver;
+
+		public Dichotomy(Func<float, float> func, float start, float end)
+		{
+			m_resolver = new Dichotomy<float>(func, v => v, start, end);
+		}
+
+		public (float, float)? GetSolution(float distanceTolerance) => m_resolver.GetSolution(distanceTolerance);
+	}
+
+
+	public sealed class Dichotomy<T>
 	{
 		private readonly Func<float, T> m_func;
         private readonly Func<T, float> m_selector;

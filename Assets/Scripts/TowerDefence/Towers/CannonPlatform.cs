@@ -21,8 +21,6 @@ namespace TowerDefence.Towers
 		[SerializeField]
 		private Rotor m_xRotor;
 
-        //private ITargetData m_solution;
-
         private Vector3 CurrentRotations => new Vector3(m_xRotor.Angle, m_yRotor.Angle);
 
 		protected override ISolution AcquireSolution(IMonster target)
@@ -45,7 +43,6 @@ namespace TowerDefence.Towers
 				return null;
 			}
 
-			//m_solution = targeting.Value.Item2;
 			return new CannonFiringSolution(this, targeting.Value.Item2);
 
 			ITargetData GetTargetingData(float hitTime)
@@ -53,7 +50,6 @@ namespace TowerDefence.Towers
 				var predictedPosition = mover.PredictPosition(hitTime);
 
 				var startingPosition = m_shootPoint.position;
-				//TODO - incapsulate within specific projectile implementation?
 				var calibration = m_projectilePrefab.Target(predictedPosition - startingPosition, maxTime);
 				if (calibration == null)
 				{
@@ -86,15 +82,6 @@ namespace TowerDefence.Towers
 		{
 			base.DrawGizmos();
 			Gizmos.DrawRay(m_shootPoint.position, m_shootPoint.forward * m_range);
-			/*
-			if (m_solution != null)
-			{
-				var color = Gizmos.color;
-				Gizmos.color = Color.green;
-				Gizmos.DrawRay(m_shootPoint.position, m_solution.Point - m_shootPoint.position);
-				Gizmos.color = color;
-			}
-			*/
 		}
 	}
 }

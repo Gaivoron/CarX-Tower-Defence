@@ -4,7 +4,7 @@ using Shared.ObjectPool;
 
 namespace TowerDefence.Monsters
 {
-    public sealed class Monster : MonoBehaviour, IMonster, IObject
+    public sealed class Monster : MonoBehaviour, ITarget, IObject
 	{
 		public event Action Died;
 		public event Action Released;
@@ -33,7 +33,7 @@ namespace TowerDefence.Monsters
 
 		public PathAgent Navigation => _navigation;
 
-		IMover IMonster.Mover => _navigation;
+		IMover ITarget.Mover => _navigation;
 
 		public void Release()
 		{

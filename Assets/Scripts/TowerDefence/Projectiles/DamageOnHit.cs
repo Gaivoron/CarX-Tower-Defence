@@ -16,10 +16,10 @@ namespace TowerDefence.Projectiles
 				return;
 			}
 
-			var monster = other.gameObject.GetComponent<IMonster>();
+			var monster = other.gameObject.GetComponent<ITarget>();
 			if (monster == null)
 			{
-				Debug.LogWarning($"No component implementing {nameof(IMonster)} on {other.name}!");
+				Debug.LogWarning($"No component implementing {nameof(ITarget)} on {other.name}!");
 				return;
 			}
 

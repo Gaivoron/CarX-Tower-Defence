@@ -5,7 +5,7 @@ namespace TowerDefence.Monsters
 {
     public sealed class MonsterSpawner : MonoBehaviour
 	{
-		public event Action<IMonster> Spawned;
+		public event Action<ITarget> Spawned;
 
 		[SerializeField]
 		private float m_interval = 3;

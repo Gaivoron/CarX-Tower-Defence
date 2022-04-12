@@ -21,7 +21,7 @@ namespace TowerDefence.Towers
 
         private CancellationTokenSource m_cancellationTokenSource;
 
-        private IEnumerable<IMonster> Monsters => m_data.MonsterRoster.Monsters;
+        private IEnumerable<ITarget> Monsters => m_data.MonsterRoster.Monsters;
 
 		public void Initialize(IGameplayData data)
 		{
@@ -32,7 +32,7 @@ namespace TowerDefence.Towers
 			UpdateCycleAsync(m_cancellationTokenSource.Token).Forget();
 		}
 
-        protected abstract ISolution AcquireSolution(IMonster target);
+        protected abstract ISolution AcquireSolution(ITarget target);
 
 		protected bool IsWithinReach(Vector3 position)
 		{
@@ -114,7 +114,7 @@ namespace TowerDefence.Towers
 			return null;
 		}
 
-		private bool IsValidTarget(IMonster target) => IsWithinReach(target.Mover.Position);
+		private bool IsValidTarget(ITarget target) => IsWithinReach(target.Mover.Position);
 
 		private void OnDrawGizmos()
 		{

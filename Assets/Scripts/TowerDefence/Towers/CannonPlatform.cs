@@ -23,7 +23,7 @@ namespace TowerDefence.Towers
 
         private Vector3 CurrentRotations => new Vector3(m_xRotor.Angle, m_yRotor.Angle);
 
-		protected override ISolution AcquireSolution(IMonster target)
+		protected override ISolution AcquireSolution(ITarget target)
 		{
 			if (m_projectilePrefab == null)
 			{

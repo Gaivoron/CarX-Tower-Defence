@@ -5,11 +5,11 @@ namespace TowerDefence.Monsters
 {
     public sealed class MonsterRoster : IMonsterRoster
 	{
-		public event Action<IMonster> MonsterReachedFinalDestination;
+		public event Action<ITarget> MonsterReachedFinalDestination;
 
-		private readonly IList<IMonster> m_monstersList = new List<IMonster>();
+		private readonly IList<ITarget> m_monstersList = new List<ITarget>();
 
-		IEnumerable<IMonster> IMonsterRoster.Monsters => m_monstersList;
+		IEnumerable<ITarget> IMonsterRoster.Monsters => m_monstersList;
 
 		public MonsterRoster(IEnumerable<MonsterSpawner> spawners)
 		{
@@ -20,7 +20,7 @@ namespace TowerDefence.Monsters
 			}
 		}
 
-        private void OnMonsterSpawned(IMonster monster)
+        private void OnMonsterSpawned(ITarget monster)
         {
 			m_monstersList.Add(monster);
 			monster.Mover.FinishReached += OnFinishReached;

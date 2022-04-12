@@ -8,9 +8,9 @@ namespace TowerDefence.Projectiles
 		[SerializeField]
 		private float m_speed = 0.2f;
 
-		private IMonster m_target;
+		private ITarget m_target;
 
-		public void SetTarget(IMonster value)
+		public void SetTarget(ITarget value)
 		{
 			if (m_target != null)
 			{

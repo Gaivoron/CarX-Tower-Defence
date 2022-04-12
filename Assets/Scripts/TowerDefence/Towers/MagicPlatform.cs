@@ -14,7 +14,7 @@ namespace TowerDefence.Towers
 		[SerializeField]
 		private Transform m_spawnPoint;
 
-        protected override ISolution AcquireSolution(IMonster target)
+        protected override ISolution AcquireSolution(ITarget target)
         {
 			if (m_projectilePrefab == null)
 			{
@@ -27,9 +27,9 @@ namespace TowerDefence.Towers
 		private sealed class Solution : ISolution
 		{
             private readonly MagicPlatform m_platform;
-            private readonly IMonster m_target;
+            private readonly ITarget m_target;
 
-            public Solution(MagicPlatform platform, IMonster target)
+            public Solution(MagicPlatform platform, ITarget target)
 			{
 				m_platform = platform;
 				m_target = target;

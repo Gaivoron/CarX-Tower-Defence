@@ -8,7 +8,7 @@ namespace TowerDefence.Towers
     {
         private sealed class CannonFiringSolution : ISolution
 		{
-			private const float TimeThreshold = 1f / 60;
+			private const float TimeThreshold = 0.001f;
 			private const float AngularThreshold = 0.001f;
 
 			private readonly CannonPlatform m_canon;
@@ -16,7 +16,6 @@ namespace TowerDefence.Towers
 
 			public CannonFiringSolution(CannonPlatform canon, ITargetData data)
 			{
-				Debug.Log($"{GetType().Name}({data})");
 				m_canon = canon;
 				m_data = data;
 			}
@@ -25,7 +24,6 @@ namespace TowerDefence.Towers
 			{
 				await UniTask.WhenAll(RotateAroundYAsync(cancellation), RotateAroundXAsync(cancellation));
 
-				//m_canon.m_xRotor.LookAt(m_data.Point);
 				Instantiate(m_canon.m_projectilePrefab, m_canon.m_shootPoint.position, m_canon.m_shootPoint.rotation);
 				return true;
 			}

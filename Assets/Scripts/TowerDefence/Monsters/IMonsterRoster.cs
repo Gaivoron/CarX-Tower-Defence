@@ -5,8 +5,8 @@ namespace TowerDefence.Monsters
 {
     public interface IMonsterRoster
 	{
-		event Action<IMonster> MonsterReachedFinalDestination;
+		event Action<ITarget> MonsterReachedFinalDestination;
 
-		public IEnumerable<IMonster> Monsters { get; }
+		public IEnumerable<ITarget> Monsters { get; }
 	}
 }

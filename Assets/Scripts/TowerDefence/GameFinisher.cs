@@ -12,13 +12,13 @@ namespace TowerDefence
             data.MonsterRoster.MonsterReachedFinalDestination += OnMonsterEscaped;
         }
 
-        private void OnMonsterEscaped(IMonster monster)
+        private void OnMonsterEscaped(ITarget monster)
         {
             m_data.LiveForce -= GetThreat(monster);
             monster.Release();
         }
 
-        private int GetThreat(IMonster monster)
+        private int GetThreat(ITarget monster)
         {
             //TODO - determine 'threat' value based on monster type and\or other parameters.
             return 1;

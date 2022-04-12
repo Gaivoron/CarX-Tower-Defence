@@ -8,16 +8,16 @@ namespace TowerDefence.Projectiles
 		[SerializeField]
 		private float m_speed = 0.2f;
 
-		private IMonster m_target;
+		private ITarget m_target;
 
-		public void SetTarget(IMonster value)
+		public void SetTarget(ITarget target)
 		{
 			if (m_target != null)
 			{
 				m_target.Released -= OnTargetReleased;
 			}
 
-			m_target = value;
+			m_target = target;
 			if (m_target != null)
 			{
 				m_target.Released += OnTargetReleased;
@@ -38,10 +38,13 @@ namespace TowerDefence.Projectiles
 				return;
 			}
 
-			var translation = m_target.Mover.Position - transform.position;
-			translation = translation.normalized * m_speed * Time.deltaTime;
+			var distance = m_target.Mover.Position - transform.position;
+			var estimatedTime = distance.magnitude / m_speed;
+			var predictedPosition = m_target.Mover.PredictPosition(estimatedTime);
+			var direction = predictedPosition - transform.position;
+			distance = m_speed * Time.deltaTime * direction.normalized;
 
-			transform.Translate(translation);
+			transform.Translate(distance);
 		}
 	}
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace TowerDefence.Projectiles
 {
-    public sealed class ArtilleryShell : ProjectileBase
+    public sealed class ArtilleryShell : Projectile
 	{
 		[SerializeField]
 		private float m_speed = 40f;
@@ -15,8 +15,7 @@ namespace TowerDefence.Projectiles
         private Vector3 m_forces;
         private float m_time;
 
-        //TODO - pass maxT as well
-        public override ICalibration Target(Vector3 distance, float _)
+        public override ICalibration Target(Vector3 distance)
         {
             var A = m_forceY * m_forceY;
             var B = -(2 * m_forceY * distance.y + m_speed * m_speed);

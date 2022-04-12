@@ -60,6 +60,11 @@ namespace TowerDefence
             m_liveForce = config.LiveForce;
 
             MonsterRoster = new MonsterRoster(m_spawners);
+            foreach (var spawner in m_spawners)
+            {
+                spawner.Initialize(this);
+                spawner.StartWave(config.Wave);
+            }
             foreach (var tower in m_towers)
             {
                 tower.Initialize(this);

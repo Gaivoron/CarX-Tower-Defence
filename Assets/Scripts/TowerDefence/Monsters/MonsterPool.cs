@@ -4,11 +4,11 @@ using System.Collections.Generic;
 
 namespace TowerDefence.Monsters
 {
-    public sealed class MonsterPool : Pool<Monster>
+    public sealed class MonsterPool : Pool<MonsterType, Monster>
     {
 		private static MonsterPool m_instance;
 
-		public static IPool<Monster> Instance
+		public static IPool<MonsterType, Monster> Instance
 		{
             get
 			{
@@ -26,10 +26,13 @@ namespace TowerDefence.Monsters
         {
         }
 
-		private static IEnumerable<Monster> CreateMonsters()
+		private static IEnumerable<Monster> CreateMonsters(MonsterType key)
 		{
-			var prefab = Resources.Load<Monster>("Minion");
-			return new[] { Object.Instantiate(prefab) };
+			var prefab = Resources.Load<Monster>(key.ToString());
+			var monster = Object.Instantiate(prefab);
+			monster.Key = key;
+
+			return new[] { monster };
 		}
 	}
 }

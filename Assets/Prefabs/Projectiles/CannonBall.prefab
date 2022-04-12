@@ -4867,7 +4867,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ce962be6fdbd584b992e376488f696f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_targetTag: Monster
+  m_targetTag: Damageable
   m_damage: 6
 --- !u!114 &-6449630743866576169
 MonoBehaviour:

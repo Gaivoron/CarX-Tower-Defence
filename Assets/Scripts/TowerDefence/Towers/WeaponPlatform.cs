@@ -16,12 +16,21 @@ namespace TowerDefence.Towers
 		public float m_rechargeDuration = 0.5f;
 		public float m_range = 4f;
 
-		private float m_rechargeProgress = 0f;
+		private float m_rechargeProgress = 0;
+		private float RechargeProgress
+		{
+			get => m_rechargeProgress;
+            set
+			{
+				m_rechargeProgress = Mathf.Clamp(value, 0, m_rechargeDuration);
+				Recharged?.Invoke(RechargeProgress, m_rechargeDuration);
+			}
+		}
 		private IGameplayData m_data;
 
         private CancellationTokenSource m_cancellationTokenSource;
 
-        private IEnumerable<IMonster> Monsters => m_data.MonsterRoster.Monsters;
+        private IEnumerable<ITarget> Monsters => m_data.MonsterRoster.Monsters;
 
 		public void Initialize(IGameplayData data)
 		{
@@ -32,7 +41,7 @@ namespace TowerDefence.Towers
 			UpdateCycleAsync(m_cancellationTokenSource.Token).Forget();
 		}
 
-        protected abstract ISolution AcquireSolution(IMonster target);
+        protected abstract ISolution AcquireSolution(ITarget target);
 
 		protected bool IsWithinReach(Vector3 position)
 		{
@@ -42,11 +51,11 @@ namespace TowerDefence.Towers
 
 		private async UniTask RechargeAsync(CancellationToken cancellation)
 		{
-			while (m_rechargeProgress < m_rechargeDuration)
+			while (RechargeProgress < m_rechargeDuration)
 			{
 				await UniTask.Yield(cancellation);
-				m_rechargeProgress += Time.deltaTime;
-				Recharged?.Invoke(m_rechargeProgress, m_rechargeDuration);
+				RechargeProgress += Time.deltaTime;
+				Recharged?.Invoke(RechargeProgress, m_rechargeDuration);
 			}
 		}
 
@@ -65,21 +74,12 @@ namespace TowerDefence.Towers
 
 			//finding target
 			var solution = await AcquireSolutionAsync(cancellation);
-
 			var hasFired = await solution.ExecuteAsync(cancellation);
 
 			if (hasFired)
 			{
-				OnShot();
+				RechargeProgress = 0f;
 			}
-		}
-
-		//TODO - make protected?
-		private void OnShot()
-		{
-			//TODO - turn into a property?
-			m_rechargeProgress = 0f;
-			Recharged?.Invoke(m_rechargeProgress, m_rechargeDuration);
 		}
 
 		private async UniTask<ISolution> AcquireSolutionAsync(CancellationToken cancellation)
@@ -114,7 +114,7 @@ namespace TowerDefence.Towers
 			return null;
 		}
 
-		private bool IsValidTarget(IMonster target) => IsWithinReach(target.Mover.Position);
+		private bool IsValidTarget(ITarget target) => IsWithinReach(target.Mover.Position);
 
 		private void OnDrawGizmos()
 		{

@@ -3,7 +3,7 @@ using System;
 
 namespace TowerDefence.Monsters
 {
-    public interface IMonster
+    public interface ITarget
 	{
 		event Action Died;
 		event Action Released;

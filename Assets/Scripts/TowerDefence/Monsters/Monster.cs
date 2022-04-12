@@ -4,7 +4,7 @@ using Shared.ObjectPool;
 
 namespace TowerDefence.Monsters
 {
-    public sealed class Monster : MonoBehaviour, ITarget, IObject
+    public sealed class Monster : MonoBehaviour, ITarget, IObject<MonsterType>
 	{
 		public event Action Died;
 		public event Action Released;
@@ -12,7 +12,8 @@ namespace TowerDefence.Monsters
 		public int m_maxHP = 30;
 
 		[SerializeField]
-		private PathAgent _navigation;
+		[UnityEngine.Serialization.FormerlySerializedAs("_navigation")]
+		private PathAgent m_navigation;
 
 		private int m_HP;
 
@@ -31,11 +32,17 @@ namespace TowerDefence.Monsters
 			}
 		}
 
-		public PathAgent Navigation => _navigation;
+		public PathAgent Navigation => m_navigation;
 
-		IMover ITarget.Mover => _navigation;
+		IMover ITarget.Mover => m_navigation;
 
-		public void Release()
+        public MonsterType Key
+		{
+			get;
+			set;
+		}
+
+        public void Release()
 		{
 			Released?.Invoke();
 			Navigation.SetPath(null);

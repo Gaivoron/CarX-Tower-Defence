@@ -10,7 +10,7 @@ namespace TowerDefence.Towers
 		private const float TimeThreshold = 1f / 100;
 
 		[SerializeField]
-		private ProjectileBase m_projectilePrefab;
+		private Projectile m_projectilePrefab;
 		[SerializeField]
 		private Transform m_shootPoint;
 
@@ -50,7 +50,7 @@ namespace TowerDefence.Towers
 				var predictedPosition = mover.PredictPosition(hitTime);
 
 				var startingPosition = m_shootPoint.position;
-				var calibration = m_projectilePrefab.Target(predictedPosition - startingPosition, maxTime);
+				var calibration = m_projectilePrefab.Target(predictedPosition - startingPosition);
 				if (calibration == null)
 				{
 					Debug.LogWarning($"{nameof(calibration)} is NULL");
